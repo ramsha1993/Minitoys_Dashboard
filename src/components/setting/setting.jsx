@@ -203,11 +203,7 @@ export default function DepartmentBudgets() {
           </div>
 
           {/* Add Department Button */}
-          <div className="mt-6">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors font-medium">
-              + Add Department
-            </button>
-          </div>
+        
         </div>
       )}
 

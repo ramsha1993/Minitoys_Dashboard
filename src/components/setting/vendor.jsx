@@ -160,17 +160,17 @@ export default function VendorManagement() {
                       Delete
                     </button>
                   </div>
-                  <p className="text-slate-300 mb-4">{vendor.description}</p>
+                  <p className=" mb-4">{vendor.description}</p>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     {vendor.contactName && (
                       <div>
-                        <span className="text-slate-400">Contact: </span>
+                        <span className="">Contact: </span>
                         <span>{vendor.contactName}</span>
                       </div>
                     )}
                     {vendor.email && (
                       <div>
-                        <span className="text-slate-400">Email: </span>
+                        <span className="">Email: </span>
                         <span>{vendor.email}</span>
                       </div>
                     )}
