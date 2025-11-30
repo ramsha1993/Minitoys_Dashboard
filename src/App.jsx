@@ -21,16 +21,20 @@ import Home from "./pages/Dashboard/Home";
 import Project from "./components/project/project";
 import Settings from "./components/setting/setting";
 import Services from "./components/services";
+import ProtectedRoute from "./components/protectedroutes";
+
 export default function App() {
   return (
     <>
+
       <Router>
         <ScrollToTop />
         <Routes>
           {/* Dashboard Layout */}
-          <Route element={<AppLayout />}>
+      <Route element={<AppLayout />}> 
+        <Route element={<ProtectedRoute />}>
             <Route index path="/" element={<Home />} />
-
+         
             {/* Others Page */}
             <Route path="/profile" element={<UserProfiles />} />
             <Route path="/calendar" element={<Calendar />} />
@@ -40,7 +44,7 @@ export default function App() {
               <Route path="/services" element={<Services />} />
             {/* Forms */}
             <Route path="/form-elements" element={<FormElements />} />
-
+       
             {/* Tables */}
             <Route path="/basic-tables" element={<BasicTables />} />
 
@@ -56,15 +60,17 @@ export default function App() {
             <Route path="/line-chart" element={<LineChart />} />
             <Route path="/bar-chart" element={<BarChart />} />
           </Route>
-
+   </Route>
           {/* Auth Layout */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
 
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />
+       
         </Routes>
       </Router>
+
     </>
   );
 }

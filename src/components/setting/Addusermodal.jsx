@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 // import { ChevronDown, ChevronUp } from 'lucide-react';
 import { X } from 'lucide-react'; 
-export default function AddUserModal({closeModal}) {
-  const [formData, setFormData] = useState({
+export default function AddUserModal({closeModal, onUserCreate, editingUser, onUserUpdate}){
+  const [formData, setFormData] = useState(editingUser || {
     avatarUrl: '',
     name: '',
     email: 'super@test.co.uk',
@@ -14,10 +14,37 @@ export default function AddUserModal({closeModal}) {
     isManager: false,
     reportsTo: 'Reports To'
   });
+   const isEditMode = !!editingUser;
 
-  const handleSubmit = (e) => {
+ 
+  const handleSubmit = () => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    if (isEditMode) {
+      // Update existing user
+      onUserUpdate(formData);
+    } else {
+      // Create new user
+      const initials = formData.name
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase() || 'UA';
+      
+      const newUser = {
+        id: Date.now(),
+        name: formData.name || 'Unnamed User',
+        email: formData.email,
+        username: formData.username,
+        role: formData.role,
+        status: formData.status,
+        department: formData.department,
+        initials: initials,
+        reportsTo: formData.reportsTo
+      };
+      
+      onUserCreate(newUser);
+    }
+    closeModal();
   };
 
   const handleChange = (field, value) => {
@@ -207,8 +234,7 @@ export default function AddUserModal({closeModal}) {
             type="submit"
             className="w-full bg-blue-700 hover:bg-blue-600 text-white font-semibold rounded-lg px-6 py-2 transition-colors duration-200 "
           >
-            Create User
-          </button>
+           {isEditMode ? 'Update User' : 'Create User'}          </button>
         </form>
         <button className="absolute z-[999] text-black top-4 right-4"       onClick={closeModal}><X size={20}/></button>
       </div>

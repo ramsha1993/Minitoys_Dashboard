@@ -1,29 +1,74 @@
-import { useState } from 'react';
-import Departmentmodal from './departmentmodal'
-const department=()=>{
-        const [isModalOpen, setIsModalOpen] = useState(false);  // State to manage modal visibility
-    
-      const openModal = () => {
-        setIsModalOpen(true);  // Open modal
-      };
-      const closeModal = () => {
-        setIsModalOpen(false);  // Close modal
-      };
-    return(
-        <div className="w-full overflow-visible h-screen  mx-auto "> 
-          {/* Departments UI */}
-          <h2 className="text-3xl font-medium mb-6">Departments</h2>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors font-medium"
-          
-           onClick={openModal}>
-    + Add Department
-</button>
+import { useState } from "react";
+import Departmentmodal from "./departmentmodal";
+import DepartmentCard from "./DepartmentCard";
 
-    {isModalOpen && <div className="fixed inset-0    overflow-auto z-[99999] backdrop-blur-xs">   <Departmentmodal closeModal={closeModal} /> </div>}    
-    
+export default function Department() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [departments, setDepartments] = useState([]);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const openAddModal = () => {
+    setEditingIndex(null);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (index) => {
+    setEditingIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => setIsModalOpen(false);
+
+  const handleSaveNew = (data) => {
+    setDepartments(prev => [...prev, data]);
+    console.log(data)
+  };
+
+  const handleUpdate = (data) => {
+    setDepartments(prev => {
+      const updated = [...prev];
+      updated[editingIndex] = data;
+      return updated;
+    });
+  };
+
+  const handleDelete = (index) => {
+    setDepartments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const editingData = editingIndex !== null ? departments[editingIndex] : null;
+
+  return (
+    <div className="w-full min-h-screen p-8">
+      <h2 className="text-3xl font-medium mb-6">Departments</h2>
+
+      <button
+        className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium"
+        onClick={openAddModal}
+      >
+        + Add Department
+      </button>
+
+      {/* Render Department Boxes */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-24 mt-8">
+        {departments.map((dept, index) => (
+          <DepartmentCard
+            key={index}
+            dept={dept}
+            onDelete={() => handleDelete(index)}
+            onEdit={() => openEditModal(index)}
+          />
+        ))}
+      </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 overflow-auto z-[99999] backdrop-blur-sm bg-black/40 ">
+          <Departmentmodal
+            closeModal={closeModal}
+            onSave={editingIndex !== null ? handleUpdate : handleSaveNew}
+            editingData={editingData}
+          />
         </div>
-
-
-    )
+      )}
+    </div>
+  );
 }
-export default department
