@@ -12,7 +12,8 @@ const ENDPOINTS = {
   },
   OTHER:
 {
-   DEPARTMENT:`department`
+   DEPARTMENT:`department`,
+   CAPEX:`capex`
 }
 
 

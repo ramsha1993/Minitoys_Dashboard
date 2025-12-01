@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import Capex from './capex'
 import { Trash2 } from "lucide-react";
-
+import { useSelector, useDispatch } from "react-redux";
+import { deleteCapex } from "../../redux/capex";
 const department=()=>{
         const [isModalOpen, setIsModalOpen] = useState(false);  // State to manage modal visibility
-        const [showTable, setShowTable] = useState([]);    
+const showTable = useSelector((state) => state.capex.list);
+const dispatch = useDispatch();
+
       const openModal = () => {
         setIsModalOpen(true);  // Open modal
       };
@@ -18,6 +21,7 @@ const department=()=>{
   const handleDeleteRow = (index) => {
   const updated = showTable.filter((_, i) => i !== index);
   setShowTable(updated);
+  dispatch(deleteCapex(index));
 };
     return(
         <div className="w-full overflow-visible h-screen  mx-auto "> 
@@ -28,7 +32,7 @@ const department=()=>{
            onClick={openModal}>
     + Add Capex
 </button>
-{showTable.length >0 &&
+{showTable.length >= 1 &&
 <table className="w-full mt-4 border-separate"
   style={{ borderSpacing: 0, borderRadius: "10px", overflow: "hidden" }}>
   <thead className="bg-gray-100 border rounded-lt-12">
@@ -48,20 +52,21 @@ const department=()=>{
 
   
  <tbody>
-  {console.log}
+ {console.log("my table:", showTable)}
+
   {showTable.map((table, index) => (
    <tr key={index}>
-  <td className="p-2 border">{table.department}</td>
-  <td className="p-2 border">{table.project}</td>
+  <td className="p-2 border">{table.department_id}</td>
+  <td className="p-2 border">{table.project_name}</td>
   <td className="p-2 border">{table.category}</td>
-  <td className="p-2 border">{table.owner}</td>
+  <td className="p-2 border">{table.owner_user_id}</td>
   <td className="p-2 border">{table.allocated}</td>
   <td className="p-2 border">{table.forecast}</td>
   <td className="p-2 border">{table.status}</td>
   <td className="p-2 border">
-    {table.startDate} - {table.endDate}
+    {table.start_date} - {table.end_date}
   </td>
-
+ {console.log("my table "+showTable)}
   <td className="p-2 border text-center">
     <button onClick={() => handleDeleteRow(index)}>
       <Trash2 className="w-5 h-5 text-red-500" />

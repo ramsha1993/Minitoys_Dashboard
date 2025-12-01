@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
-
+import api from '../../api/axiosinterceptor';
+import ENDPOINTS from '../../utils/ENDPOINTS';
+import { useDispatch } from "react-redux";
+import { addCapex } from "../../redux/capex";
 export default function AddCapExForm({closeModal,onsubmit}) {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     department: '',
+    capexcode:'CAP-2025-01',
     project: '',
     category: '',
     owner: '',
     allocated: '',
     forecast: '',
-    status: 'Pending',
+    spent:'5000',
+    status: '',
     startDate: '',
     endDate: ''
   });
@@ -21,20 +27,54 @@ export default function AddCapExForm({closeModal,onsubmit}) {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log('Form submitted:', formData);
-    onsubmit(formData)
-    setFormData({
+  
+  const payload={
+    department_id: formData.department,
+    capex_code: formData.capexcode,
+    project_name: formData.project,
+    category: formData.category,
+    owner_user_id: formData.owner,
+    allocated: formData.allocated,
+    forecast: formData.forecast,
+    spent: formData.spent,
+    status: formData.status,
+    start_date: formData.startDate,
+    end_date: formData.endDate
+  }
+    
+  try{
+    const response = await api.post({
+      url: ENDPOINTS.OTHER.CAPEX,
+      data: payload,
+    });
+
+   
+    console.log("Capex created:", response);
+  dispatch(addCapex(response)); // add row to redux
+
+    // ⬅ send data to parent
+    closeModal();  
+     setFormData({
   department: '',
   project: '',
   category: '',
   owner: '',
   allocated: '',
+  spent:'',
+  capexcode:'',
   forecast: '',
   status: 'Pending',
   startDate: '',
   endDate: ''
 });
+      } 
+  catch (error) {
+    console.log("my status" +formData.status)
+    console.error("Error creating Capex:", error);
+  }  
+
 
     // Handle form submission
   };
@@ -61,7 +101,7 @@ export default function AddCapExForm({closeModal,onsubmit}) {
             <label className="block  text-sm mb-2">
               Department
             </label>
-            <select
+           {/* <select
               name="department"
               value={formData.department}
               onChange={handleChange}
@@ -73,7 +113,16 @@ export default function AddCapExForm({closeModal,onsubmit}) {
               <option value="Operations">Operations</option>
               <option value="Finance">Finance</option>
               <option value="HR">HR</option>
-            </select>
+            </select> */}
+              <input
+              type="text"
+              name="department"
+              required
+              value={formData.department}
+              onChange={handleChange}
+              placeholder="department_id"
+              className="w-full border  placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
           </div>
 
           {/* Project */}
@@ -113,7 +162,7 @@ export default function AddCapExForm({closeModal,onsubmit}) {
             <label className="block text-sm mb-2">
               Owner (Admin)
             </label>
-            <select
+            {/* <select
               name="owner"
               value={formData.owner}
               onChange={handleChange}
@@ -123,7 +172,15 @@ export default function AddCapExForm({closeModal,onsubmit}) {
               <option value="John Doe">John Doe</option>
               <option value="Jane Smith">Jane Smith</option>
               <option value="Mike Johnson">Mike Johnson</option>
-            </select>
+            </select> */}
+             <input
+              type="text"
+            name="owner"
+              value={formData.owner}
+              onChange={handleChange}
+              placeholder="owner"
+              className="w-full border   placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            /> 
           </div>
 
           {/* Allocated (£) */}
@@ -137,7 +194,7 @@ export default function AddCapExForm({closeModal,onsubmit}) {
               value={formData.allocated}
               onChange={handleChange}
               placeholder="Allocated (£)"
-              className="w-full border  text-gray-300 placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border   placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             /> 
           </div>
 
@@ -152,7 +209,7 @@ export default function AddCapExForm({closeModal,onsubmit}) {
               value={formData.forecast}
               onChange={handleChange}
               placeholder="Forecast (£)"
-              className="w-full border  text-gray-300 placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border   placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
@@ -167,9 +224,9 @@ export default function AddCapExForm({closeModal,onsubmit}) {
               onChange={handleChange}
               className="w-full  border rounded-lg px-4 py-3 focus:outline-none  focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
-              <option value="Rejected">Rejected</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
               <option value="In Progress">In Progress</option>
               <option value="Completed">Completed</option>
             </select>
@@ -185,7 +242,7 @@ export default function AddCapExForm({closeModal,onsubmit}) {
               name="startDate"
               value={formData.startDate}
               onChange={handleChange}
-              className="w-full  text-gray-400 rounded-lg border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full   rounded-lg border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
@@ -199,7 +256,7 @@ export default function AddCapExForm({closeModal,onsubmit}) {
               name="endDate"
               value={formData.endDate}
               onChange={handleChange}
-              className="w-full border text-gray-400 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border  rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
         </div>
@@ -213,7 +270,6 @@ export default function AddCapExForm({closeModal,onsubmit}) {
             Cancel
           </button>
           <button
-            onClick={handleSubmit}
             className="px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
             Create
