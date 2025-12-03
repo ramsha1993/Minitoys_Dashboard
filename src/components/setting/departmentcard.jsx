@@ -19,19 +19,19 @@ const [showbudget,setshowbudget]= useState(false)
       </div>
 {!showbudget &&
 <div>
-      <p className="mt-4"><b>Cost Center:</b> {dept.costCenter}</p>
-      <p className="mt-2"><b>Head:</b> {dept.departmentHead}</p>
+      <p className="mt-4"><b>Cost Center:</b> {dept?.cost_center_code}</p>
+      <p className="mt-2"><b>Head:</b> {dept?.departmentHead?.full_name}</p>
       </div>}
     
     {showbudget &&
     <div>
-        {dept.departmentCodes?.map((codeObj, index) => (
+        {dept.DepartmentCodes?.map((codeObj, index) => (
     <div key={index} className="ml-4 mt-1">
-      <p> {codeObj.name}-£{codeObj.value}</p>
+      <p> {codeObj.code}-£{codeObj.total_budget}</p>
 
-      {codeObj.serviceCodes?.map((svc, svcIndex) => (
+      {codeObj?.ServiceCodes?.map((svc, svcIndex) => (
         <div key={svcIndex} className="ml-6">
-          <li> {svc.name}-£{svc.value}</li>
+          <li> {svc.service_code}-£{svc.budget_amount}</li>
         </div>
       ))}
     </div>

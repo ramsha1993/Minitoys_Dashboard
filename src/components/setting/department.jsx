@@ -1,11 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Departmentmodal from "./departmentmodal";
 import DepartmentCard from "./DepartmentCard";
+import api from "../../api/axiosinterceptor";
+import ENDPOINTS from "../../utils/ENDPOINTS";
 
 export default function Department() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
+
+  useEffect(() => {
+
+    fetchDepartments();
+  }, []);
+  const fetchDepartments = async () => {
+    try {
+      const response = await api.get({
+        url: ENDPOINTS.OTHER.DEPARTMENT,
+      });
+      if (response) {
+        setDepartments(response);
+      }
+    } catch (error) {
+      console.error("Error fetching departments:", error);
+    }
+  };
   const openAddModal = () => {
     setEditingIndex(null);
     setIsModalOpen(true);
@@ -19,8 +38,7 @@ export default function Department() {
   const closeModal = () => setIsModalOpen(false);
 
   const handleSaveNew = (data) => {
-    setDepartments(prev => [...prev, data]);
-    console.log(data)
+      fetchDepartments();
   };
 
   const handleUpdate = (data) => {
@@ -50,7 +68,7 @@ export default function Department() {
 
       {/* Render Department Boxes */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-24 mt-8">
-        {departments.map((dept, index) => (
+        {departments?.departments?.length > 0 && departments?.departments?.map((dept, index) => (
           <DepartmentCard
             key={index}
             dept={dept}
