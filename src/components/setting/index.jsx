@@ -4,8 +4,8 @@ import Department from './department'
 import Capex from './capexmain'
 import Vendor from './vendor'
 import Report from './report'
-export default function DepartmentBudgets() {
-  const [departments, setDepartments] = useState([
+export default function DepartmentBudgets({user,fetchusers,departments}) {
+   const [department, setDepartments] = useState([
     {
       id: 1,
       name: 'Engineering',
@@ -16,22 +16,22 @@ export default function DepartmentBudgets() {
       updated: '2025-11-15',
     },
     {
-      id: 2,
-      name: 'Marketing',
-      costCenter: 'CC-002',
-      allocated: 30000,
-      spent: 28000,
-      forecast: 29500,
-      updated: '2025-11-18',
+  //     id: 2,
+  //     name: 'Marketing',
+  //     costCenter: 'CC-002',
+  //     allocated: 30000,
+  //     spent: 28000,
+  //     forecast: 29500,
+  //     updated: '2025-11-18',
     },
     {
-      id: 3,
-      name: 'Sales',
-      costCenter: 'CC-003',
-      allocated: 25000,
-      spent: 18750,
-      forecast: 23000,
-      updated: '2025-11-17',
+  //     id: 3,
+  //     name: 'Sales',
+  //     costCenter: 'CC-003',
+  //     allocated: 25000,
+  //     spent: 18750,
+  //     forecast: 23000,
+  //     updated: '2025-11-17',
     },
   ]);
 
@@ -46,9 +46,9 @@ export default function DepartmentBudgets() {
     { id: 'vendors', label: 'Vendors' },
   ];
 
-  const totalBudget = departments.reduce((sum, dept) => sum + dept.allocated, 0);
-  const totalSpent = departments.reduce((sum, dept) => sum + dept.spent, 0);
-  const totalForecast = departments.reduce((sum, dept) => sum + dept.forecast, 0);
+  const totalBudget = department.reduce((sum, dept) => sum + dept.allocated, 0);
+  const totalSpent = department.reduce((sum, dept) => sum + dept.spent, 0);
+  const totalForecast = department.reduce((sum, dept) => sum + dept.forecast, 0);
   const forecastRemaining = totalBudget - totalForecast;
   const variance = ((totalForecast - totalBudget) / totalBudget) * 100;
 
@@ -152,7 +152,7 @@ export default function DepartmentBudgets() {
                 </tr>
               </thead>
               <tbody>
-                {departments.map((dept) => (
+                {department.map((dept) => (
                   <tr
                     key={dept.id}
                     className="border-b border-slate-800 hover:bg-slate-800/50 transition-colors"
@@ -216,7 +216,7 @@ export default function DepartmentBudgets() {
       )}
 
       {activeTab === 'departments' && (
-        <div className='h-screen w-full'>      <Department /></div>
+        <div className=' w-full'>      <Department   fetchusers={fetchusers} user={user} departments={departments}/></div>
 
       )}
 

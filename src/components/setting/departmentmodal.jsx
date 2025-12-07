@@ -2,7 +2,9 @@ import React, { useState,useEffect } from 'react';
 import { X, Plus } from 'lucide-react';
 import ENDPOINTS from '../../utils/ENDPOINTS';
 import api from '../../api/axiosinterceptor';
-export default function AddDepartmentModal({ closeModal, onSave,editingData }) {
+import Select from 'react-select';
+import { UpdateDept } from '../function';
+export default function AddDepartmentModal({update,setupdate,departments,setdepartments, closeModal,fetchDepartments, onSave,editingData,user}) {
 
   const [formData, setFormData] = useState({
     departmentName: '',
@@ -11,14 +13,45 @@ export default function AddDepartmentModal({ closeModal, onSave,editingData }) {
     description: '',
     departmentCodes: []
   });
+const [selectedOption,setSelectedOption]=useState()
+  // for select 2 opt
+const options = user.users.map(us => ({
+  value: us.id,
+  label: us.full_name
+}));
+// for select2
+ const handleChangeselect = (field,selectedOption) => {
 
+  setSelectedOption(selectedOption)
+setFormData(prev => ({ ...prev, [field]: selectedOption.value }));
+console.log("selected" ,selectedOption)}
+ 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
-  console.log(formData.departmentCodes)
+
+
+
   useEffect(() => {
   if (editingData) {
-    setFormData(editingData);  // prefill fields
+        const headOption = options.find(opt => opt.value === editingData.head_user_id);
+    setSelectedOption(headOption);
+    setFormData({
+      departmentName: editingData.name,
+      costCenter: editingData.cost_center_code,
+      departmentHead: editingData.head_user_id,
+      description: editingData.description,
+      departmentCodes:editingData.departmentCodes?.map(dc => ({
+        name: dc.code,                        // API → your modal
+        value: dc.total_budget,               // API → your modal
+        serviceCodes: dc.serviceCodes?.map(sc => ({
+          name: sc.service_code,              // API → your modal
+          value: sc.budget_amount             // API → your modal
+        })
+   )})) 
+  })
+  console.log("editdata",editingData)
+  
   }
 }, [editingData]);
   const addDeptCode = () => {
@@ -27,13 +60,13 @@ export default function AddDepartmentModal({ closeModal, onSave,editingData }) {
       departmentCodes: [...prev.departmentCodes, { name: '', value: '', serviceCodes: [] }]
     }));
   };
-
+// for adding dept code in deptcode array
   const updateDeptCode = (index, field, value) => {
     const updated = [...formData.departmentCodes];
     updated[index][field] = value;
     setFormData(prev => ({ ...prev, departmentCodes: updated }));
   };
-
+// removing code
   const removeDeptCode = (index) => {
     setFormData(prev => ({
       ...prev,
@@ -59,7 +92,8 @@ export default function AddDepartmentModal({ closeModal, onSave,editingData }) {
     setFormData(prev => ({ ...prev, departmentCodes: updated }));
   };
 
-  const handleSave = async () => {
+ 
+const handleSave = async () => {
       const payload = {
     name: formData.departmentName,
     description: formData.description,
@@ -75,23 +109,69 @@ export default function AddDepartmentModal({ closeModal, onSave,editingData }) {
       }))
     }))
   }
+  
 
   try {
     const response = await api.post({
       url: ENDPOINTS.OTHER.DEPARTMENT,
       data: payload,
-    });
+    })
 
     console.log("Department created:", response);
 
     onSave(formData);
-      
+       closeModal(); 
+
     console.log("Department " +JSON.stringify(formData))    // ⬅ send data to parent
-    closeModal();  
+  
       } catch (error) {
     console.error("Error creating department:", error);
   }      
   };
+
+
+const handleEdit = async (id) => {
+
+  const payload = {
+    name: formData.departmentName,
+    description: formData.description,
+    cost_center_code: formData.costCenter,
+    head_user_id: formData.departmentHead,
+    is_active: true, // or make this dynamic if needed
+    department_codes: formData.departmentCodes.map(dc => ({
+      code: dc.name,
+      total_budget: Number(dc.value), // ensure it's a number
+      service_codes: dc.serviceCodes.map(sc => ({
+        service_code: sc.name,
+        budget_amount: Number(sc.value) // ensure number
+      }))
+    }))
+  };
+
+  try {
+    const response = await api.put({
+      url: `${ENDPOINTS.OTHER.DEPARTMENT}/${id}`,
+      data: payload,
+    });
+
+    console.log("Department updated:", response);
+
+const res= await fetchDepartments()
+const fetchdept=res.departments
+console.log("my fetch dept",fetchdept)
+
+        closeModal();
+
+
+    console.log("Department:", JSON.stringify(formData));
+
+
+setupdate(false)
+  } catch (error) {
+    console.error("Error updating department:", error?.response?.data || error);
+  }
+};
+
 
   return (
     <div className=" relative max-w-2xl mx-auto  p-4">
@@ -110,11 +190,15 @@ export default function AddDepartmentModal({ closeModal, onSave,editingData }) {
           className="w-full text-black rounded-xl px-5 py-2 border mb-4"
         />
 
-        <input type="text" placeholder="Department Head"
-          value={formData.departmentHead}
-          onChange={(e) => handleChange('departmentHead', e.target.value)}
-          className="w-full text-black rounded-xl px-5 py-2 border mb-4"
-        />
+      
+         <Select placeholder="Department Head" 
+        value={selectedOption}
+              className="w-full text-black rounded-xl  py-2  mb-4"
+
+onChange={(selected) => handleChangeselect('departmentHead', selected)}
+
+        options={options}
+      />
 
         <textarea placeholder="Description"
           value={formData.description}
@@ -186,9 +270,9 @@ export default function AddDepartmentModal({ closeModal, onSave,editingData }) {
             Cancel
           </button>
 
-          <button onClick={handleSave}
+          <button onClick={()=>update ? handleEdit(editingData.id) : handleSave()}
             className="bg-blue-600 text-white font-semibold rounded-xl px-6 py-2">
-            Save
+      {  update ? 'Update':'Save' }
           </button>
         </div>
       </div>

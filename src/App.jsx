@@ -19,7 +19,7 @@ import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import Project from "./components/project/project";
-import Settings from "./components/setting/setting";
+import Settings from "./pages/setting";
 import Services from "./components/services";
 import ProtectedRoute from "./components/protectedroutes";
 

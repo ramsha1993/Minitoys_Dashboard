@@ -1,44 +1,56 @@
 import { useState, useEffect } from "react";
 import Departmentmodal from "./departmentmodal";
-import DepartmentCard from "./DepartmentCard";
+import DepartmentCard from "./departmentcard";
 import api from "../../api/axiosinterceptor";
 import ENDPOINTS from "../../utils/ENDPOINTS";
-
+import { fetchDepartments,fetchDepartmentid } from "../function";
+import { DeleteDepartment,fetchusers } from "../function";
 export default function Department() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [departments, setDepartments] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [users,setusers]=useState([])
+  const [departments,setdepartments]=useState()
+ const [editingdata,seteditdata]=useState()
+ const [update, setupdate]=useState(false)
+useEffect(() => {
+  const loadData = async () => {
+    const res = await fetchDepartments();
+    setdepartments(res);
+    console.log("Res", res);
 
-  useEffect(() => {
-
-    fetchDepartments();
-  }, []);
-  const fetchDepartments = async () => {
-    try {
-      const response = await api.get({
-        url: ENDPOINTS.OTHER.DEPARTMENT,
-      });
-      if (response) {
-        setDepartments(response);
-      }
-    } catch (error) {
-      console.error("Error fetching departments:", error);
-    }
+    fetchusers(setusers);
   };
+
+  loadData();
+}, []);
+
+
+
   const openAddModal = () => {
+    seteditdata(null)
     setEditingIndex(null);
     setIsModalOpen(true);
   };
 
-  const openEditModal = (index) => {
-    setEditingIndex(index);
-    setIsModalOpen(true);
+  const openEditModal = async (index) => {
+ 
+ const res= await fetchDepartmentid(index)
+    console.log("get id resposne",res)
+    seteditdata(res.department)
+     setEditingIndex(index);
+     setupdate(true)
+       setIsModalOpen(true);
+
   };
 
-  const closeModal = () => setIsModalOpen(false);
-
-  const handleSaveNew = (data) => {
-      fetchDepartments();
+  const closeModal = () => {
+    setIsModalOpen(false);
+      setupdate(false)
+  }
+  const handleSaveNew = async(data) => {
+    const res= await fetchDepartments();
+    setdepartments(res)
+      console.log('dept'+JSON.stringify(departments))
   };
 
   const handleUpdate = (data) => {
@@ -49,14 +61,19 @@ export default function Department() {
     });
   };
 
-  const handleDelete = (index) => {
-    setDepartments(prev => prev.filter((_, i) => i !== index));
+
+  const handleDelete = async(id) => {
+   await DeleteDepartment(id)
+    const res=await fetchDepartments();
+    setdepartments(res)
+    console.log("Delete",id)
+  
   };
 
   const editingData = editingIndex !== null ? departments[editingIndex] : null;
 
   return (
-    <div className="w-full min-h-screen p-8">
+    <div className="w-full  p-8">
       <h2 className="text-3xl font-medium mb-6">Departments</h2>
 
       <button
@@ -72,8 +89,8 @@ export default function Department() {
           <DepartmentCard
             key={index}
             dept={dept}
-            onDelete={() => handleDelete(index)}
-            onEdit={() => openEditModal(index)}
+            onDelete={() => handleDelete(dept.id)}
+            onEdit={() => openEditModal(dept.id)}
           />
         ))}
       </div>
@@ -82,8 +99,14 @@ export default function Department() {
         <div className="fixed inset-0 overflow-auto z-[99999] backdrop-blur-sm bg-black/40 ">
           <Departmentmodal
             closeModal={closeModal}
-            onSave={editingIndex !== null ? handleUpdate : handleSaveNew}
-            editingData={editingData}
+            // onSave={editingIndex !== null ? handleUpdate : handleSaveNew}
+            
+            user={users}
+            fetchDepartments={fetchDepartments}
+setdepartments={setdepartments}
+setupdate={setupdate}
+update={update}            editingData={editingdata}
+            departments={departments}
           />
         </div>
       )}
