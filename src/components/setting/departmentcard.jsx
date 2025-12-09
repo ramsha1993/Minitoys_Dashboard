@@ -15,7 +15,7 @@ const [Delete,setIsDeleting]=useState(false)
     }
   };
   return (
-    <div className="bg-white shadow-lg rounded-2xl p-4 border text-black  w-[240px]">
+    <div className="bg-white shadow-lg rounded-2xl p-4 border text-black  w-[250px]">
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-2">
           <Building className="text-blue-600" />

@@ -1,11 +1,12 @@
 import React, { useState,useEffect } from 'react'
 import Setting from '../components/setting/index'
-// import { fetchDepartments} from '../components/function'
+import { fetchcapexCategories} from '../components/function'
 const setting = () => {
       const [departments, setDepartments] = useState([]);
     useEffect(() => {
 
-    // fetchDepartments(setDepartments);
+
+      fetchcapexCategories()
     console.log("departments",departments)
      
  
@@ -15,7 +16,7 @@ const setting = () => {
 
   return (
 <>
-<Setting departments={departments} />
+<Setting departments={departments} fetchcapexCategories={fetchcapexCategories} />
 </>
   )
 }

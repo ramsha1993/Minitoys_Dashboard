@@ -1,28 +1,56 @@
 import AddUserModal from "./Addusermodal"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import UserCard from "./usercard"
+import ENDPOINTS from '../../utils/ENDPOINTS'
+import api from "../../api/axiosinterceptor"
+
 export default function UserManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [users, setUsers] = useState([
-   
-  ]);
+ ]);
+
+ const [filteredUsers,setfilteredUsers]=useState([])
   const [searchQuery, setSearchQuery] = useState('');
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+useEffect(()=>{
+const userList= async ()=> {
+     try { 
+       const response = await api.get({
+         url: ENDPOINTS.AUTH.USER_LIST,
+ })
+ const data=await response.users
+      setfilteredUsers(data)
+       console.log("user res",response)
+       closeModal()
+  }
 
-  const handleUserCreate = (newUser) => {
-    setUsers(prev => [...prev, newUser]);
-  };
+   catch(error){
+      console.error("Error creating user:", error);}
+}
+   userList();
+},[])
+  const handleUserCreate = async (newUser) => {
+        try {
+        
+       const response = await api.post({
+         url: ENDPOINTS.AUTH.REGISTER,
+   data: newUser,
+   isFile:true
+  
+       })
+       console.log("user res",response)
+       closeModal()
+  }
+
+      catch(error){
+      console.error("Error creating user:", error);}
+}
 
   const handleDeleteUser = (userId) => {
     setUsers(prev => prev.filter(user => user.id !== userId));
   };
-
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <div className="min-h-screen  p-6">

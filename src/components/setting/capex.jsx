@@ -3,7 +3,7 @@ import api from '../../api/axiosinterceptor';
 import ENDPOINTS from '../../utils/ENDPOINTS';
 import { useDispatch } from "react-redux";
 import { addCapex } from "../../redux/capex";
-export default function AddCapExForm({closeModal,onsubmit}) {
+export default function AddCapExForm({closeModal,fetchCapex,onsubmit}) {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     department: '',
@@ -18,6 +18,16 @@ export default function AddCapExForm({closeModal,onsubmit}) {
     startDate: '',
     endDate: ''
   });
+  
+
+  const editCapex= async()=>{
+const response= await api.get({
+    url: `${ENDPOINTS.OTHER.CAPEX}/${id}`
+    })
+    setFormData()
+
+  }
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,9 +42,8 @@ export default function AddCapExForm({closeModal,onsubmit}) {
   
   const payload={
     department_id: formData.department,
-    capex_code: formData.capexcode,
     project_name: formData.project,
-    category: formData.category,
+    capex_category_id: formData.category,
     owner_user_id: formData.owner,
     allocated: formData.allocated,
     forecast: formData.forecast,
@@ -53,7 +62,7 @@ export default function AddCapExForm({closeModal,onsubmit}) {
    
     console.log("Capex created:", response);
   dispatch(addCapex(response)); // add row to redux
-
+fetchCapex()
     // ⬅ send data to parent
     closeModal();  
      setFormData({
@@ -227,8 +236,6 @@ export default function AddCapExForm({closeModal,onsubmit}) {
               <option value="pending">Pending</option>
               <option value="approved">Approved</option>
               <option value="rejected">Rejected</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
             </select>
           </div>
 

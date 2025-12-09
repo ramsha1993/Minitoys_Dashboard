@@ -3,18 +3,19 @@ import Department from "../components/setting/department"
 const ENDPOINTS = {
   AUTH: {
     LOGIN: `users/login`,
-    REGISTER: `register`,
-    REGISTER: `register`,
+    REGISTER: `users/register`,
     SEND_OTP: `otp/send-otp`,
     VERIFY_OTP: `otp/verify-otp`,
     UPDATE_PASSWORD: `otp/update-password`,
+    USER_LIST:`users/list`
    
   },
   OTHER:
 {
    DEPARTMENT:`department`,
    CAPEX:`capex`,
-   USERS_LIST:`users/list`
+   USERS_LIST:`users/list`,
+   CAPEX_CATEGORIES:'capex-categories'
 }
 
 

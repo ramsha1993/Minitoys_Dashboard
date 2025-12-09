@@ -1,12 +1,47 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Capex from './capex'
-import { Trash2 } from "lucide-react";
+import { Trash2,Pencil } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteCapex } from "../../redux/capex";
+import ENDPOINTS from '../../utils/ENDPOINTS';
+import api from '../../api/axiosinterceptor';
 const department=()=>{
-        const [isModalOpen, setIsModalOpen] = useState(false);  // State to manage modal visibility
+        const [isModalOpen, setIsModalOpen] = useState(false);  
+        const [fetchdata,setFetchdata]=useState([])
+        
+        // State to manage modal visibility
 const showTable = useSelector((state) => state.capex.list);
 const dispatch = useDispatch();
+const fetchCapex= async ()=>{
+  try{
+  const response= await api.get({
+      url: ENDPOINTS.OTHER.CAPEX,
+  
+    });
+    
+setFetchdata(response)
+console.log("res"+ response)
+}
+
+
+  catch (error) {
+    console.error("Error creating Capex:", error);
+  }  }
+useEffect(()=>{
+
+  fetchCapex()
+},[])
+
+    const handleEdit = async (id) => {
+
+    const response = await api.put({
+    url: `${ENDPOINTS.OTHER.CAPEX}/${id}`
+    })
+    console.log("capex delete" + response)
+  fetchCapex()
+
+};
+
 
       const openModal = () => {
         setIsModalOpen(true);  // Open modal
@@ -18,11 +53,15 @@ const dispatch = useDispatch();
   setShowTable(prev => [...prev, data]);   // add new table each time
       }
       
-  const handleDeleteRow = (index) => {
-  const updated = showTable.filter((_, i) => i !== index);
-  setShowTable(updated);
-  dispatch(deleteCapex(index));
+  const handleDeleteRow = async (id) => {
+    const response = await api.delete({
+    url: `${ENDPOINTS.OTHER.CAPEX}/${id}`
+    })
+    console.log("capex delete" + response)
+  fetchCapex()
+
 };
+
     return(
         <div className="w-full overflow-visible h-screen  mx-auto "> 
           {/* Departments UI */}
@@ -44,7 +83,8 @@ const dispatch = useDispatch();
       <th className="p-2 border">Allocated</th>
       <th className="p-2 border">Forecast</th>
       <th className="p-2 border">Status</th>
-      <th className="p-2 border">Dates</th>
+      <th className="p-2 border">Dates</th> 
+      <th className="p-2 border">Edit</th>
        <th className="p-2 border">Delete</th>
     </tr>
   </thead>
@@ -54,11 +94,11 @@ const dispatch = useDispatch();
  <tbody>
  {console.log("my table:", showTable)}
 
-  {showTable.map((table, index) => (
+  {fetchdata.map((table, index) => (
    <tr key={index}>
   <td className="p-2 border">{table.department_id}</td>
   <td className="p-2 border">{table.project_name}</td>
-  <td className="p-2 border">{table.category}</td>
+  <td className="p-2 border">{table.capex_category_id}</td>
   <td className="p-2 border">{table.owner_user_id}</td>
   <td className="p-2 border">{table.allocated}</td>
   <td className="p-2 border">{table.forecast}</td>
@@ -67,8 +107,13 @@ const dispatch = useDispatch();
     {table.start_date} - {table.end_date}
   </td>
  {console.log("my table "+showTable)}
+   <td className="p-2 border text-center">
+    <button onClick={() => handleEdit(table.id)}>
+      <Pencil className="w-5 h-5 " />
+    </button>
+  </td>
   <td className="p-2 border text-center">
-    <button onClick={() => handleDeleteRow(index)}>
+    <button onClick={() => handleDeleteRow(table.id)}>
       <Trash2 className="w-5 h-5 text-red-500" />
     </button>
   </td>
@@ -79,7 +124,7 @@ const dispatch = useDispatch();
 
 </table>
 }
-    {isModalOpen && <div className="fixed inset-0    overflow-auto z-[99999] backdrop-blur-sm">   <Capex closeModal={closeModal} onsubmit={onsubmit} /> </div>}    
+    {isModalOpen && <div className="fixed inset-0    overflow-auto z-[99999] backdrop-blur-sm">   <Capex closeModal={closeModal} fetchCapex={fetchCapex}  onsubmit={onsubmit} /> </div>}    
     
         </div>
 

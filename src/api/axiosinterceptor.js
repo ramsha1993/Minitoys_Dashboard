@@ -91,16 +91,25 @@ const request = async ({
       await setAuthToken();
     }
 
-    let requestData = data;
-    if (isFile) {
-      const formData = new FormData();
-      if (data) {
-        Object.entries(data).forEach(([key, value]) => {
-          formData.append(key, value);
-        });
-      }
-      requestData = formData;
-    }
+let requestData = data;
+// if (isFile) {
+//   const formData = new FormData();
+//   if (data) {
+//     Object.entries(data).forEach(([key, value]) => {
+//       // Handle File correctly
+//       if (value instanceof File) {
+//         formData.append(key, value, value.name);
+//       } else if (Array.isArray(value)) {
+//         // optional: handle arrays
+//         value.forEach(v => formData.append(`${key}[]`, v));
+//       } else if (value !== undefined && value !== null) {
+//         formData.append(key, value);
+//       }
+//     });
+//   }
+//   requestData = formData;
+// }
+
 
     const response = await axiosInstance({
       method,

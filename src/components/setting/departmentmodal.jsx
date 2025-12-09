@@ -13,8 +13,44 @@ export default function AddDepartmentModal({update,setupdate,departments,setdepa
     description: '',
     departmentCodes: []
   });
-const [selectedOption,setSelectedOption]=useState()
+
+const [errors, setErrors] = useState({});
+const [apiError, setApiError] = useState("");
+const [loading, setLoading] = useState(false);
+
+const validateForm = () => {
+  let err = {};
+
+  if (!formData.departmentName.trim()) err.departmentName = "Department name is required";
+  if (!formData.costCenter.trim()) err.costCenter = "Cost center is required";
+  if (!formData.departmentHead) err.departmentHead = "Select a department head";
+
+  formData.departmentCodes.forEach((dc, i) => {
+    if (!dc.name.trim()) err[`dc-name-${i}`] = "Dept code is required";
+    if (!dc.value) err[`dc-value-${i}`] = "Budget value required";
+
+    dc.serviceCodes.forEach((sc, j) => {
+      if (!sc.name.trim()) err[`sc-name-${i}-${j}`] = "Service code is required";
+      if (!sc.value) err[`sc-value-${i}-${j}`] = "Service budget required";
+    });
+  });
+
+  setErrors(err);
+  return Object.keys(err).length === 0;
+};
+
+
+
+
+
+
+
+
+
+
+
   // for select 2 opt
+
 const options = user.users.map(us => ({
   value: us.id,
   label: us.full_name
@@ -94,6 +130,9 @@ console.log("selected" ,selectedOption)}
 
  
 const handleSave = async () => {
+    if (!validateForm()) return;
+
+  setLoading(true);
       const payload = {
     name: formData.departmentName,
     description: formData.description,
@@ -118,11 +157,13 @@ const handleSave = async () => {
     })
 
     console.log("Department created:", response);
-
-    onSave(formData);
+  const data=  JSON.stringify(formData)
+  const updated_Data=await fetchDepartments()
+  console.log("update data" + updated_Data)
+setdepartments(updated_Data)
        closeModal(); 
 
-    console.log("Department " +JSON.stringify(formData))    // ⬅ send data to parent
+    console.log("Department " +  JSON.stringify(formData))    // ⬅ send data to parent
   
       } catch (error) {
     console.error("Error creating department:", error);
@@ -131,7 +172,9 @@ const handleSave = async () => {
 
 
 const handleEdit = async (id) => {
+  if (!validateForm()) return;
 
+  setLoading(true);
   const payload = {
     name: formData.departmentName,
     description: formData.description,
@@ -158,6 +201,7 @@ const handleEdit = async (id) => {
 
 const res= await fetchDepartments()
 const fetchdept=res.departments
+setdepartments(res)
 console.log("my fetch dept",fetchdept)
 
         closeModal();
@@ -263,6 +307,16 @@ onChange={(selected) => handleChangeselect('departmentHead', selected)}
           className="bg-blue-600 text-white rounded-xl px-4 py-2 mb-6 flex items-center gap-2">
           <Plus size={20} /> Add Dept Code
         </button>
+
+{Object.keys(errors).length > 0 && (
+  <div className="bg-red-100 text-red-700 p-3 my-4 rounded-lg">
+    <ul className="list-disc ml-4">
+      {Object.values(errors).map((err, idx) => (
+        <li key={idx}>{err}</li>
+      ))}
+    </ul>
+  </div>
+)}
 
         <div className="flex justify-end gap-3">
           <button onClick={closeModal}

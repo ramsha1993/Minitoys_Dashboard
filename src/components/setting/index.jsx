@@ -4,7 +4,8 @@ import Department from './department'
 import Capex from './capexmain'
 import Vendor from './vendor'
 import Report from './report'
-export default function DepartmentBudgets({user,fetchusers,departments}) {
+import Capexcategories from './capexcategoriesmain';
+export default function DepartmentBudgets({user,fetchusers,departments,fetchcapexCategories}) {
    const [department, setDepartments] = useState([
     {
       id: 1,
@@ -44,6 +45,7 @@ export default function DepartmentBudgets({user,fetchusers,departments}) {
     { id: 'capex', label: 'Capex' },
     { id: 'reports', label: 'Reports' },
     { id: 'vendors', label: 'Vendors' },
+    {id:'capex categories',label:'Capex categories'}
   ];
 
   const totalBudget = department.reduce((sum, dept) => sum + dept.allocated, 0);
@@ -224,6 +226,12 @@ export default function DepartmentBudgets({user,fetchusers,departments}) {
         <div>
           {/* Capex UI */}
         <Capex />
+        </div>
+      )}
+       {activeTab === 'capex categories' && (
+        <div>
+          {/* Capex UI */}
+        <Capexcategories fetchcapexCategories={fetchcapexCategories}/>
         </div>
       )}
 
