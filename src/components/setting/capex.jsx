@@ -1,34 +1,72 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../../api/axiosinterceptor';
 import ENDPOINTS from '../../utils/ENDPOINTS';
+import {Update} from '../function'
 import { useDispatch } from "react-redux";
 import { addCapex } from "../../redux/capex";
-export default function AddCapExForm({closeModal,fetchCapex,onsubmit}) {
+import Select from 'react-select';
+
+
+export default function AddCapExForm({closeModal,edit,editData,userslist,categories,fetchDept,fetchCapex,onsubmit}) {
   const dispatch = useDispatch();
+  const [selectedOption, setselectedOption] = useState()
+  const [categoryOption, setCategoryOption] = useState(null);
+  const [useroption, setuseroption] = useState()
   const [formData, setFormData] = useState({
-    department: '',
-    capexcode:'CAP-2025-01',
+
     project: '',
     category: '',
     owner: '',
     allocated: '',
     forecast: '',
     spent:'5000',
+    departmentId:'',
     status: '',
     startDate: '',
     endDate: ''
   });
   
 
-  const editCapex= async()=>{
-const response= await api.get({
-    url: `${ENDPOINTS.OTHER.CAPEX}/${id}`
-    })
-    setFormData()
+  // Load edit data
+  useEffect(() => {
+    if (edit && editData) {
+              const headOption1 = option_three.find(opt => opt.value === editData.owner_user_id);
+    setuseroption(headOption1);
+              const headOption2 = options_two.find(opt => opt.value === editData.capex_category_id);
+    setCategoryOption(headOption2);
+                  const headOption3 = options.find(opt => opt.value === editData.department_id);
+    setselectedOption(headOption3);
+      setFormData({
+  
 
-  }
+    project:editData.project_name,
+    category:editData.capex_category_id,
+    owner:editData.owner_user_id,
+    allocated:editData.allocated,
+    forecast:editData.forecast,
+    spent:editData.spent,
+    departmentId:editData.department_id,
+    status:editData.status,
+    startDate: editData.start_date,
+    endDate:editData.end_date
+      });
+    }
+  }, [editData]);
 
 
+const options = fetchDept.departments.map(us => ({
+  value: us.id,
+  label: us.name
+}));
+
+const options_two=categories.map(us => ({
+  value: us.id,
+  label: us.name
+}));
+const option_three = (userslist?.users || []).map(user => ({
+  value: user.id,
+  label: user.full_name
+}));
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -36,12 +74,21 @@ const response= await api.get({
       [name]: value
     }));
   };
+  const handleChangeselect = (field,selectedOption) => {
 
-  const handleSubmit = async () => {
+setFormData(prev => ({ ...prev, [field]: selectedOption.value }));
+console.log("selected" ,selectedOption)}
+
+ 
+
+
+
+
+const handleSubmit = async () => {
     console.log('Form submitted:', formData);
   
   const payload={
-    department_id: formData.department,
+    department_id: formData.departmentId,
     project_name: formData.project,
     capex_category_id: formData.category,
     owner_user_id: formData.owner,
@@ -74,6 +121,7 @@ fetchCapex()
   spent:'',
   capexcode:'',
   forecast: '',
+  
   status: 'Pending',
   startDate: '',
   endDate: ''
@@ -88,6 +136,49 @@ fetchCapex()
     // Handle form submission
   };
 
+
+
+
+    const handleUpdate = async () => {
+      // if (!validateForm()) return;
+  
+      try {
+          const payload={
+    department_id: formData.departmentId,
+    project_name: formData.project,
+    capex_category_id: formData.category,
+    owner_user_id: formData.owner,
+    allocated: formData.allocated,
+    forecast: formData.forecast,
+    spent: formData.spent,
+    status: formData.status,
+    start_date: formData.startDate,
+    end_date: formData.endDate
+  }
+    
+        await Update(ENDPOINTS.OTHER.CAPEX, editData.id, payload);
+    fetchCapex()
+       setFormData({
+  department: '',
+  project: '',
+  category: '',
+  owner: '',
+  allocated: '',
+  spent:'',
+  capexcode:'',
+  forecast: '',
+  
+  status: 'Pending',
+  startDate: '',
+  endDate: ''
+});
+     
+        closeModal();
+      } catch (error) {
+        console.error("Error updating Capex categories:", error);
+      }
+    };
+  
   const handleCancel = () => {
     console.log('Form cancelled');
     // Handle cancel action
@@ -100,14 +191,15 @@ fetchCapex()
           <form
   onSubmit={(e) => {
     e.preventDefault(); // stops submit if inputs invalid
-    handleSubmit();
+   if (!edit) handleSubmit();
+            else handleUpdate();
   }}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Department */}
 
           <div>
 
-            <label className="block  text-sm mb-2">
+            <label className="block  text-sm ">
               Department
             </label>
            {/* <select
@@ -123,7 +215,7 @@ fetchCapex()
               <option value="Finance">Finance</option>
               <option value="HR">HR</option>
             </select> */}
-              <input
+              {/* <input
               type="text"
               name="department"
               required
@@ -131,7 +223,22 @@ fetchCapex()
               onChange={handleChange}
               placeholder="department_id"
               className="w-full border  placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+            /> */}
+            <Select placeholder="Department Id" 
+        value={selectedOption}
+        styles={{
+    control: (base) => ({
+      ...base,
+    padding:'6px',
+      borderRadius: "0.75rem", // rounded-xl
+    }),
+  }}
+              className="w-full text-black rounded-xl  py-2  mb-4"
+
+onChange={(selected) => { setselectedOption(selected)
+  handleChangeselect('departmentId', selected)}}
+
+        options={options} />
           </div>
 
           {/* Project */}
@@ -155,7 +262,7 @@ fetchCapex()
             <label className="block  text-sm mb-2">
               Category
             </label>
-            <input
+            {/* <input
               type="text"
               name="category"
               required
@@ -163,7 +270,23 @@ fetchCapex()
               onChange={handleChange}
               placeholder="Category"
               className="w-full border  placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+            /> */}
+         <Select
+  placeholder="Category"
+  value={categoryOption}
+         styles={{
+    control: (base) => ({
+      ...base,
+    padding:'6px',
+      borderRadius: "0.75rem", // rounded-xl
+    }),
+  }}
+  onChange={(selected) => {
+    setCategoryOption(selected);
+    handleChangeselect("category", selected);
+  }}
+  options={options_two}
+/>
           </div>
 
           {/* Owner (Admin) */}
@@ -182,14 +305,22 @@ fetchCapex()
               <option value="Jane Smith">Jane Smith</option>
               <option value="Mike Johnson">Mike Johnson</option>
             </select> */}
-             <input
-              type="text"
-            name="owner"
-              value={formData.owner}
-              onChange={handleChange}
-              placeholder="owner"
-              className="w-full border   placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            /> 
+                 <Select
+  placeholder="owner"
+  value={useroption}
+         styles={{
+    control: (base) => ({
+      ...base,
+    padding:'6px',
+      borderRadius: "0.75rem", // rounded-xl
+    }),
+  }}
+  onChange={(selected) => {
+    setuseroption(selected);
+    handleChangeselect("owner", selected);
+  }}
+  options={option_three}
+/>
           </div>
 
           {/* Allocated (£) */}
@@ -277,9 +408,10 @@ fetchCapex()
             Cancel
           </button>
           <button
-            className="px-6 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+            onClick={edit ? handleUpdate : handleSubmit}
+            className="px-6 py-2.5 bg-blue-500 text-white rounded-lg hoveSr:bg-blue-600 transition-colors"
           >
-            Create
+            {edit ? 'Update' : 'Create'}
           </button>
         </div>
 </form>

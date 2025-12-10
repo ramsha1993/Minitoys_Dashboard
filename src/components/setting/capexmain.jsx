@@ -3,13 +3,18 @@ import Capex from './capex'
 import { Trash2,Pencil } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteCapex } from "../../redux/capex";
+import { fetchcapexCategories,fetchUsers,FetchbyId } from '../function';
 import ENDPOINTS from '../../utils/ENDPOINTS';
 import api from '../../api/axiosinterceptor';
-const department=()=>{
-        const [isModalOpen, setIsModalOpen] = useState(false);  
-        const [fetchdata,setFetchdata]=useState([])
-        
-        // State to manage modal visibility
+const department=({fetchDepartments})=>{
+  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [fetchdata,setFetchdata]=useState([])
+const [fetchDept, setfetchDept] = useState([])
+  const [categories, setCategories] = useState([])
+  const [userslist, setusersList] = useState([])
+   const [editData, seteditData] = useState([])
+   const [edit, setEdit] = useState(false)
+  // State to manage modal visibility
 const showTable = useSelector((state) => state.capex.list);
 const dispatch = useDispatch();
 const fetchCapex= async ()=>{
@@ -18,26 +23,51 @@ const fetchCapex= async ()=>{
       url: ENDPOINTS.OTHER.CAPEX,
   
     });
-    
+
 setFetchdata(response)
-console.log("res"+ response)
+console.log("capex res"+ response)
 }
 
 
   catch (error) {
     console.error("Error creating Capex:", error);
   }  }
-useEffect(()=>{
+const fetchdept= async ()=>{
+const response=await fetchDepartments()
+setfetchDept(response)
+}
 
-  fetchCapex()
+const fetchCategories= async ()=>{
+    const response = await fetchcapexCategories()
+     setCategories(response)
+     console.log("response" + response)
+    }
+const loadUsers = async () => {
+  const response = await fetchUsers();  // imported function
+  setusersList(response);
+       console.log("user list response" + response)
+
+};
+
+useEffect( ()=>{
+
+fetchCapex()
+fetchdept()
+loadUsers()
+fetchCategories()
 },[])
 
     const handleEdit = async (id) => {
+ 
+   const res= await FetchbyId(ENDPOINTS.OTHER.CAPEX,id)
 
-    const response = await api.put({
-    url: `${ENDPOINTS.OTHER.CAPEX}/${id}`
-    })
-    console.log("capex delete" + response)
+    console.log("edit",res)
+     seteditData(res)
+    setEdit(true)
+   
+ setIsModalOpen(true);
+
+
   fetchCapex()
 
 };
@@ -63,7 +93,7 @@ useEffect(()=>{
 };
 
     return(
-        <div className="w-full overflow-visible h-screen  mx-auto "> 
+        <div className="w-full overflow-visible h-screen p-8 mx-auto "> 
           {/* Departments UI */}
           <h2 className="text-3xl font-medium mb-6">Capex</h2>
           <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors font-medium"
@@ -71,7 +101,7 @@ useEffect(()=>{
            onClick={openModal}>
     + Add Capex
 </button>
-{showTable.length >= 1 &&
+
 <table className="w-full mt-4 border-separate"
   style={{ borderSpacing: 0, borderRadius: "10px", overflow: "hidden" }}>
   <thead className="bg-gray-100 border rounded-lt-12">
@@ -94,7 +124,9 @@ useEffect(()=>{
  <tbody>
  {console.log("my table:", showTable)}
 
-  {fetchdata.map((table, index) => (
+
+ {fetchdata.map((table, index) => (
+
    <tr key={index}>
   <td className="p-2 border">{table.department_id}</td>
   <td className="p-2 border">{table.project_name}</td>
@@ -118,13 +150,12 @@ useEffect(()=>{
     </button>
   </td>
 </tr>
+))}
 
-  ))}
 </tbody>
 
 </table>
-}
-    {isModalOpen && <div className="fixed inset-0    overflow-auto z-[99999] backdrop-blur-sm">   <Capex closeModal={closeModal} fetchCapex={fetchCapex}  onsubmit={onsubmit} /> </div>}    
+    {isModalOpen && <div className="fixed inset-0    overflow-auto z-[99999] backdrop-blur-sm">   <Capex fetchDept={fetchDept} closeModal={closeModal} editData={editData} edit={edit} userslist={userslist} categories={categories} fetchCapex={fetchCapex}  onsubmit={onsubmit} /> </div>}    
     
         </div>
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import CategoryModal from './capexCategories'
 import CategoryCard from './capexCategoriesCard'
 import ENDPOINTS from '../../utils/ENDPOINTS'
-import  { Delete ,FetchbyId} from '../function'
+import  { Delete ,FetchbyId,Update} from '../function'
 const capexCategoriesmain = ({fetchcapexCategories}) => {
 const [isModalOpen, setIsModalOpen] = useState(false)
 const [categories, setCategories] = useState([])
@@ -32,19 +32,30 @@ fetchdata()
      seteditData(res)
     setEdit(true)
    
-    openModal()
+        setIsModalOpen(true);
+
 
   };
 
       const openModal = () => {
+           
         setIsModalOpen(true);
           setEdit(false)
       };
          const closeModal = () => {
         setIsModalOpen(false);  // Close modal
       };
+
+const update= async (id)=> {
+  Update(ENDPOINTS.OTHER.CAPEX_CATEGORIES,id)
+
+    fetchdata()
+}
+
+
+
   return (
-          <div className="w-full overflow-visible h-screen  mx-auto "> 
+          <div className="w-full overflow-visible h-screen p-8  mx-auto "> 
           {/* Departments UI */}
           <h2 className="text-3xl font-medium mb-6">Capex Categories</h2>
           <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors font-medium"
@@ -60,11 +71,12 @@ fetchdata()
       return <CategoryCard key={index} category={category}
       
           onDelete={() => handleDelete(category.id)}
-            onEdit={() => openEditModal(category.id)} />
+            onEdit={() => openEditModal(category.id)} 
+         />
     })}
   </div>
 }
-    {isModalOpen && <div className="fixed inset-0    overflow-auto z-[99999] backdrop-blur-sm">   <CategoryModal closeModal={closeModal} edit={edit}  editData={editData}/> </div>}    
+    {isModalOpen && <div className="fixed inset-0    overflow-auto z-[99999] backdrop-blur-sm">   <CategoryModal closeModal={closeModal} edit={edit} fetchdata={fetchdata} editData={editData}/> </div>}    
 
 </div>
 

@@ -52,10 +52,11 @@ try {
     }
 }
 
-export async function Update(endpoints,id) {
+export async function Update(endpoints,id,data) {
 try {
       const response = await api.put({
         url:`${endpoints}/${id}`,
+        data:data
       });
       if (response) {    
         console.log("EDit single function",response);
@@ -75,6 +76,25 @@ export async function fetchDepartments(){
       });
       if (response) {    
         console.log("test",response);
+            
+        return  response;
+      }
+    } catch (error) {
+      console.error("Error fetching departments:", error);
+    }
+  };
+
+
+
+
+  export async function fetchUsers(){
+    try {
+       const response = await api.get({
+        url: ENDPOINTS.OTHER.USERS_LIST,
+
+      })
+      if (response) {    
+        console.log("users list",response);
             
         return  response;
       }
