@@ -1,4 +1,3 @@
-import Department from "../components/setting/department"
 
 const ENDPOINTS = {
   AUTH: {
@@ -14,6 +13,7 @@ const ENDPOINTS = {
 {
    DEPARTMENT:`department`,
    CAPEX:`capex`,
+   MODULE:'modules',
    USERS_LIST:`users/list`,
    CAPEX_CATEGORIES:'capex-categories'
 }

@@ -12,8 +12,10 @@ import {
   PageIcon,
   PieChartIcon,
   PlugInIcon,
+  BoltIcon,
   TableIcon,
-  UserCircleIcon,
+  UserCircleIcon,BoxIcon
+
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import SidebarWidget from "./SidebarWidget";
@@ -32,15 +34,21 @@ const navItems = [
     path: "/project",
   },
    {
-    icon: <GridIcon />,
+    icon: <BoltIcon />,
     name: "Setting",
     path: "/setting",
+  },
+  {
+    icon: <BoxIcon />,
+    name: "Modules",
+    path: "/modules",
   },
    {
     icon: <GridIcon />,
     name: "Services",
     path: "/services",
   },
+    
   {
     icon: <CalenderIcon />,
     name: "Calendar",

@@ -52,6 +52,24 @@ try {
     }
 }
 
+
+export async function GETDATA(endpoints) {
+try {
+      const response = await api.get({
+        url:`${endpoints}`,
+      });
+      if (response) {    
+        console.log("Fetch data ",response);
+            
+        return  response;
+      }
+    }
+     catch (error) {
+      console.error("Error fetching data", error);
+    }
+}
+
+
 export async function Update(endpoints,id,data) {
 try {
       const response = await api.put({

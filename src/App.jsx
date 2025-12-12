@@ -22,7 +22,7 @@ import Project from "./components/project/project";
 import Settings from "./pages/setting";
 import Services from "./components/services";
 import ProtectedRoute from "./components/protectedroutes";
-
+import Modules from "./pages/module";
 export default function App() {
   return (
     <>
@@ -41,6 +41,7 @@ export default function App() {
             <Route path="/blank" element={<Blank />} />
             <Route path="/project" element={<Project />} />
             <Route path="/setting" element={<Settings />} />
+            <Route path="/modules" element={<Modules />} />
               <Route path="/services" element={<Services />} />
             {/* Forms */}
             <Route path="/form-elements" element={<FormElements />} />
