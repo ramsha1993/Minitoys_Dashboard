@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import Modules from './modules'
 import Roles from './roles'
 import Assign from './assign'
-const ModulesDashboard = ({getData,fetchdata}) => {
+const ModulesDashboard = ({getData,fetchdata,fetchroles,Role}) => {
   const [activeTab, setActiveTab] = useState('Modules');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', description: '' });
@@ -27,7 +27,6 @@ const ModulesDashboard = ({getData,fetchdata}) => {
       created: '12/13/2025'
     }
   ]);
-const [Role, setIsRole] = useState(false)
   const tabs = ['Modules', 'Roles', 'Assign'];
 
   const handleInputChange = (e) => {
@@ -95,17 +94,8 @@ const [Role, setIsRole] = useState(false)
         {activeTab === 'Roles' && (
      <div className="bg-white">
             {/* Add Module Button */}
-            <div className="flex justify-end mb-6">
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-              >
-                <Plus size={20} />
-                Add Role
-              </button>
-       
-</div>
-          <Roles isModalOpen={isModalOpen} handleCancel={handleCancel} />
+
+          <Roles isModalOpen={isModalOpen} fetchroles={fetchroles} Role={Role} handleCancel={handleCancel} />
   </div>
       )}  
 

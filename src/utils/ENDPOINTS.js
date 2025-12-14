@@ -16,7 +16,8 @@ const ENDPOINTS = {
    MODULE:'modules',
    USERS_LIST:`users/list`,
    CAPEX_CATEGORIES:'capex-categories',
-   VENDOR:'vendors'
+   VENDOR:'vendors',
+   ROLE:'roles'
 }
 
 
