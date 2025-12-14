@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import ENDPOINTS from '../../utils/ENDPOINTS';
+import { POST,Delete,Update ,FetchbyId} from '../function';
 
-export default function VendorManagement() {
+import { Pencil } from 'lucide-react';
+export default function VendorManagement({fetchVendor,fetchVendordata}) {
   const [formData, setFormData] = useState({
     vendorName: '',
     description: '',
@@ -10,7 +13,8 @@ export default function VendorManagement() {
   
   const [vendors, setVendors] = useState([]);
   const [errors, setErrors] = useState({});
-
+const [editData, seteditData] = useState(null)
+const [edit, setEdit] = useState(false)
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -44,24 +48,93 @@ export default function VendorManagement() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateForm()) {
       const newVendor = {
         id: Date.now(),
         ...formData
       };
-      setVendors(prev => [...prev, newVendor]);
+        setVendors(prev => [...prev, newVendor]);
+        console.log("vendors"+ vendors)
+      const payload={
+    name:formData.vendorName, 
+    description:formData.description,
+    contactName:formData.contactName,
+    email:formData.email,
+    supplier:formData.supplier
+} 
+
+ const response=  await POST(ENDPOINTS.OTHER.VENDOR,payload)
+
+ console.log("post vendor" , response)
+      fetchVendordata()
       setFormData({
         vendorName: '',
         description: '',
         contactName: '',
         email: ''
       });
+
+
+
     }
   };
 
-  const handleDelete = (id) => {
-    setVendors(prev => prev.filter(vendor => vendor.id !== id));
+
+
+  const handleUpdate = async () => {
+    if (validateForm()) {
+      const newVendor = {
+        id: Date.now(),
+        ...formData
+      };
+        setVendors(prev => [...prev, newVendor]);
+        console.log("vendors"+ vendors)
+      const payload={
+    name:formData.vendorName, 
+    description:formData.description,
+    contactName:formData.contactName,
+    email:formData.email,
+    supplier:formData.supplier
+} 
+
+ const response=  await Update(ENDPOINTS.OTHER.VENDOR,editData.id,payload)
+
+ console.log("post vendor" , response)
+      fetchVendordata()
+      setFormData({
+        vendorName: '',
+        description: '',
+        contactName: '',
+        email: ''
+      });
+           setEdit(false)
+
+
+
+    }
+  };
+
+  const handleDelete = async (id) => {
+   await Delete(ENDPOINTS.OTHER.VENDOR,id)
+ fetchVendordata()
+  
+  };
+
+ const handleEdit = async (id) => {
+ 
+   const res= await FetchbyId(ENDPOINTS.OTHER.VENDOR,id)
+const data=res.vendor
+    console.log("edit",data)
+     seteditData(data)
+    setFormData({ vendorName: editData.name,
+    description: editData.description,
+    contactName:editData.contactName,
+    email:editData.email})
+        setEdit(true)
+   
+      
+
   };
 
   return (
@@ -131,10 +204,10 @@ export default function VendorManagement() {
 
           <div className="flex justify-end">
             <button
-              onClick={handleSubmit}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg transition-colors"
+              onClick={edit ? handleUpdate : handleSubmit}
+              className="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-3 rounded-lg transition-colors"
             >
-              Add Vendor
+             {edit ? 'Update':'Add Vendor'}
             </button>
           </div>
         </div>
@@ -142,26 +215,26 @@ export default function VendorManagement() {
         <div className="border-t border-slate-700 pt-8">
           <h2 className="text-3xl font-bold mb-6">Existing Vendors</h2>
           
-          {vendors.length === 0 ? (
+          {fetchVendor.length == 0 ? (
             <p className="text-slate-400 text-lg">No vendors added yet.</p>
           ) : (
             <div className="space-y-4">
-              {vendors.map((vendor) => (
+              {fetchVendor.map((vendor) => (
                 <div
                   key={vendor.id}
                   className="border border-slate-700 rounded-lg p-6"
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-semibold">{vendor.vendorName}</h3>
-                    <button
-                      onClick={() => handleDelete(vendor.id)}
-                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+                    <h3 className="text-xl font-semibold">{vendor.name}</h3>
+                 <button
+                    onClick={() => handleEdit(vendor.id)}
+                      className=" bg-blue-500 text-white px-2 py-2 rounded-lg text-xs transition-colors"
                     >
-                      Delete
+                      <Pencil />
                     </button>
                   </div>
                   <p className=" mb-4">{vendor.description}</p>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-1 gap-4 text-sm">
                     {vendor.contactName && (
                       <div>
                         <span className="">Contact: </span>
@@ -174,6 +247,12 @@ export default function VendorManagement() {
                         <span>{vendor.email}</span>
                       </div>
                     )}
+                             <button
+                      onClick={() => handleDelete(vendor.id)}
+                      className="bg-red-500 hover:bg-red-600 w-24 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               ))}

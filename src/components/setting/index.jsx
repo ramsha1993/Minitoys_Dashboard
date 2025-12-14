@@ -5,7 +5,7 @@ import Capex from './capexmain'
 import Vendor from './vendor'
 import Report from './report'
 import Capexcategories from './capexcategoriesmain';
-export default function DepartmentBudgets({user,fetchusers,departments,fetchcapexCategories,fetchDepartments}) {
+export default function DepartmentBudgets({user,fetchusers,departments,fetchcapexCategories,fetchDepartments,fetchVendor,fetchVendordata}) {
    const [department, setDepartments] = useState([
     {
       id: 1,
@@ -247,7 +247,7 @@ export default function DepartmentBudgets({user,fetchusers,departments,fetchcape
         <div>
           {/* Vendors UI */}
           <h2 className="text-2xl font-bold mb-6">Vendors</h2>
-          <Vendor />
+          <Vendor fetchVendor={fetchVendor} fetchVendordata={fetchVendordata} />
         </div>
       )}
     </div>

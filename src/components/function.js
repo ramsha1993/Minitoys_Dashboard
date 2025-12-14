@@ -70,6 +70,24 @@ try {
 }
 
 
+export async function POST(endpoints,data) {
+try {
+      const response = await api.post({
+        url:`${endpoints}`,
+        data:data
+      });
+      if (response) {    
+        console.log("EDit single function",response);
+            
+        return  response;
+      }
+    }
+     catch (error) {
+      console.error("Error fetching departments:", error);
+    }
+}
+
+
 export async function Update(endpoints,id,data) {
 try {
       const response = await api.put({
