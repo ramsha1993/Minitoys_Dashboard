@@ -17,7 +17,7 @@ export default function AddDepartmentModal({update,setupdate,departments,setdepa
 const [errors, setErrors] = useState({});
 const [apiError, setApiError] = useState("");
 const [loading, setLoading] = useState(false);
-
+const [selectedOption, setSelectedOption] = useState(null)
 const validateForm = () => {
   let err = {};
 

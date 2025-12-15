@@ -18,7 +18,7 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
-import Project from "./components/project/project";
+import Project from "./pages/project";
 import Settings from "./pages/setting";
 import Services from "./components/services";
 import ProtectedRoute from "./components/protectedroutes";

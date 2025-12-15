@@ -17,7 +17,9 @@ const ENDPOINTS = {
    USERS_LIST:`users/list`,
    CAPEX_CATEGORIES:'capex-categories',
    VENDOR:'vendors',
-   ROLE:'roles'
+   ROLE:'roles',
+   DEPT_NAMES:'department/names',
+   CAPEX_BY_DEPT:'capex/department'
 }
 
 

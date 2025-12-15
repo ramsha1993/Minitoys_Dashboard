@@ -1,6 +1,28 @@
 import React, { useState } from 'react';
+import Select from 'react-select';
 
-const ProjectExpenseManager = () => {
+const ProjectExpenseManager = ({data,fetchCapex,showproject}) => {
+
+const [formData, setFormData] = useState(null)
+const [selectedOption, setSelectedOption] = useState(null)
+const options = data?.map(us => ({
+  value: us.id,
+  label: us.name
+}));
+// for select2
+ const handleChangeselect = async (field,selectedOption) => {
+
+  setSelectedOption(selectedOption)
+  console.log("selected" ,selectedOption.value)
+  await fetchCapex(selectedOption.value)
+console.log("show project"+ showproject)
+
+  console.log("Selectedoption" + JSON.stringify(selectedOption.value))
+setFormData(prev => ({ ...prev, [field]: selectedOption.value }));
+}
+
+
+
   const [department, setDepartment] = useState('');
   const [project, setProject] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,31 +40,38 @@ const ProjectExpenseManager = () => {
         <label htmlFor="department" className="block text-sm font-medium mb-2">
           Department
         </label>
-        <select
-          id="department"
-          value={department}
-          onChange={(e) => setDepartment(e.target.value)}
-          className="w-full p-2 border rounded-md "
-        >
-          <option value="">Select department</option>
-          {/* Add department options here */}
-        </select>
+                <Select placeholder="Department " 
+        value={selectedOption}
+              className="w-full text-black rounded-xl  py-2  mb-4"
+
+onChange={(selected) => handleChangeselect('departmentHead', selected)}
+
+        options={options}
+      />
+
       </div>
 
       {/* Project Select */}
       <div className="mb-6 w-1/2">
-        <label htmlFor="project" className="block text-sm font-medium mb-2">
+        <label htmlFor="project" className="block text-sm font-medium mb-4">
           Project
         </label>
-        <select
-          id="project"
-          value={project}
-          onChange={(e) => setProject(e.target.value)}
-          className="w-full p-2 border border-gray-600 rounded-md "
-        >
-          <option value="">Select project</option>
-          {/* Add project options here */}
-        </select>
+     <select
+  id="project"
+  value={project}
+  onChange={(e) => setProject(e.target.value)}
+  className="w-full p-2 mb-4 border border-gray-600 rounded-md"
+>
+<option value="">Select</option>
+    {Array.isArray(showproject) &&
+      showproject.map((item, index) => (
+        <option key={index} value={item.id}>
+          {item.project_name}
+        </option>
+      ))}
+
+</select>
+
       </div>
 </div>
       {/* Search Input */}
