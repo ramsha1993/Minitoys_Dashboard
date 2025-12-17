@@ -246,7 +246,7 @@ export default function DepartmentBudgets({user,fetchusers,departments,fetchcape
       {activeTab === 'vendors' && (
         <div>
           {/* Vendors UI */}
-          <h2 className="text-2xl font-bold mb-6">Vendors</h2>
+          <h2 className="text-2xl font-bold  px-8 py-4">Vendors</h2>
           <Vendor fetchVendor={fetchVendor} fetchVendordata={fetchVendordata} />
         </div>
       )}

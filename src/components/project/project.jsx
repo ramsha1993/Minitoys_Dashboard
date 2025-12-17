@@ -1,15 +1,34 @@
 import React, { useState } from 'react';
 import Select from 'react-select';
+import ProjectModal from './modal'
 
-const ProjectExpenseManager = ({data,fetchCapex,showproject}) => {
+const ProjectExpenseManager = ({data,serviceCode,Vendor, fetchCapex,showproject}) => {
 
-const [formData, setFormData] = useState(null)
+
+
+  const [formData, setFormData] = useState(null)
 const [selectedOption, setSelectedOption] = useState(null)
+const [isModalOpen, setisModalOpen] = useState(false)
 const options = data?.map(us => ({
   value: us.id,
   label: us.name
 }));
-// for select2
+
+
+
+
+
+
+
+const openModal=()=>{
+return setisModalOpen(true)
+}
+
+
+  const closeModal = () => {
+    setisModalOpen(false);
+ 
+  }
  const handleChangeselect = async (field,selectedOption) => {
 
   setSelectedOption(selectedOption)
@@ -95,9 +114,19 @@ onChange={(selected) => handleChangeselect('departmentHead', selected)}
       </div>
 
       {/* Add Expense Button */}
-      <button className=" py-3 px-6 bg-blue-700 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-200">
+      <button className=" py-3 px-6 bg-blue-700 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-200" onClick={()=>openModal()}>
         + Add Expense
       </button>
+
+
+
+      {isModalOpen && 
+      
+          <div className="fixed inset-0 overflow-auto z-[99999] flex justify-center backdrop-blur-xs">
+      <ProjectModal  serviceCode={serviceCode} Vendor={Vendor} setisModalOpen={setisModalOpen} closeModal={closeModal} />
+      
+      
+      </div>  }
     </div>
   );
 };

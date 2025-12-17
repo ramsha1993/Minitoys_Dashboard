@@ -19,7 +19,8 @@ const ENDPOINTS = {
    VENDOR:'vendors',
    ROLE:'roles',
    DEPT_NAMES:'department/names',
-   CAPEX_BY_DEPT:'capex/department'
+   CAPEX_BY_DEPT:'capex/department',
+   SERVICE_CODE:'service-codes/department'
 }
 
 

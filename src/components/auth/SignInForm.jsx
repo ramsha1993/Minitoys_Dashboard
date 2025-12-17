@@ -7,19 +7,18 @@ import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import { useFormik } from "formik";
 import api from "../../api/axiosinterceptor"; 
-import { useDispatch } from "react-redux";
 import  ENDPOINTS  from "../../utils/ENDPOINTS";
-import axios from "axios";
-// import { useDispatch } from "react-redux";
-// import { LoginUser } from "../../redux/AuthSlice";
+import toast, { Toaster } from "react-hot-toast";
+// import { setUser } from "../../redux/user";
+import { useDispatch } from "react-redux";
+import { LoginUser } from "../../redux/AuthSlice";
 // import { showToast } from "../../utils/showToast";
-import { LoginUser } from "../../redux/Authslice";
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   // ---------------- Formik Setup ----------------
   const formik = useFormik({
@@ -31,7 +30,6 @@ export default function SignInForm() {
       handleSubmit(values);
     },
   });
-const dispatch = useDispatch();
   // --------------- Submit Handler --------
   // -------
   const handleSubmit = async (values) => {
@@ -46,29 +44,24 @@ const dispatch = useDispatch();
         },
       });
 
-// const response = await axios.post("http://localhost:5000/api/users/login", {
-//   email: values.email,
-//   password: values.password,
-// });
-      if (response) {
+      // if (response) {
         console.log("Login response:", response);
-                dispatch(LoginUser({ user: response.user, token: response.token }));
+        navigate("/");
+  dispatch(LoginUser({ user: response.user, token: response.token }));
 
 console.log("DISPATCHING TO REDUX:", {
   user: response.user,
   token: response.token
 });
-
+        // dispatch(setUser({ user: response.user.full_name }));
         
-        navigate("/");
-        
-      }
+      // }
     } 
     
     
     catch (error) {
       console.log("error"+ error?.message);
-      // showToast({ message: error?.message, isError: true });
+  toast.error(error?.response?.data?.message || "Something went wrong. Please try again!");
     }
   };
 
@@ -182,7 +175,7 @@ console.log("DISPATCHING TO REDUX:", {
               </Link>
             </p>
           </div>
-
+<Toaster position="bottom-right"  reverseOrder={false} />
         </div>
       </div>
     </div>

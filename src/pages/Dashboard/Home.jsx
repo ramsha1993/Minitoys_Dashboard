@@ -4,9 +4,19 @@ import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
 // import MonthlyTarget from "../../components/ecommerce/MonthlyTarget";
 // import RecentOrders from "../../components/ecommerce/RecentOrders";
 // import DemographicCard from "../../components/ecommerce/DemographicCard";
+ import { useSelector } from "react-redux";
+
 import PageMeta from "../../components/common/PageMeta";
+import { useEffect } from "react";
 
 export default function Home() {
+   const user = useSelector((state) => state.user.user); 
+
+
+
+   useEffect(()=>{
+console.log("user loggedin" +user)
+   },[])
   return (
     <>
       <PageMeta

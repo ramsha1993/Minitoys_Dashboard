@@ -3,17 +3,26 @@ import { useEffect, useState } from "react"
 import UserCard from "./usercard"
 import ENDPOINTS from '../../utils/ENDPOINTS'
 import api from "../../api/axiosinterceptor"
+import { GETDATA } from '../function';
 
 export default function UserManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [users, setUsers] = useState([
- ]);
-
+ 
+ const [Roles,setRoles] = useState([])
  const [filteredUsers,setfilteredUsers]=useState([])
   const [searchQuery, setSearchQuery] = useState('');
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+
+
+  const fetchdata = async ()=>{
+  const response = await GETDATA(ENDPOINTS.OTHER.ROLE)
+  setRoles(response)
+}
+
+
 useEffect(()=>{
 const userList= async ()=> {
      try { 
@@ -30,6 +39,7 @@ const userList= async ()=> {
       console.error("Error creating user:", error);}
 }
    userList();
+   fetchdata()
 },[])
   const handleUserCreate = async (newUser) => {
         try {
@@ -92,7 +102,7 @@ const userList= async ()=> {
         {/* Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 overflow-auto z-[99999] backdrop-blur-sm">
-            <AddUserModal closeModal={closeModal} onUserCreate={handleUserCreate} />
+            <AddUserModal Roles={Roles} filteredUsers={filteredUsers} closeModal={closeModal} onUserCreate={handleUserCreate} />
           </div>
         )}
       </div>

@@ -23,7 +23,16 @@ import Settings from "./pages/setting";
 import Services from "./components/services";
 import ProtectedRoute from "./components/protectedroutes";
 import Modules from "./pages/module";
-export default function App() {
+import { LoginUser } from "./redux/AuthSlice";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
+export default function App() {  
+   const user = useSelector((state) => state.user.current);
+  useEffect(()=>{
+    console.log("logged in " + JSON.stringify(user))
+  },[])
+ 
+
   return (
     <>
 
