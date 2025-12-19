@@ -3,26 +3,26 @@ import Departmentmodal from "./departmentmodal";
 import DepartmentCard from "./departmentcard";
 import api from "../../api/axiosinterceptor";
 import ENDPOINTS from "../../utils/ENDPOINTS";
-import { fetchDepartments,fetchDepartmentid } from "../function";
-import { DeleteDepartment,fetchusers } from "../function";
+import { fetchDepartments, fetchDepartmentid } from "../function";
+import { DeleteDepartment, fetchusers } from "../function";
 export default function Department() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
-  const [users,setusers]=useState([])
-  const [departments,setdepartments]=useState()
- const [editingdata,seteditdata]=useState()
- const [update, setupdate]=useState(false)
-useEffect(() => {
-  const loadData = async () => {
-    const res = await fetchDepartments();
-    setdepartments(res);
-    console.log("Res", res);
+  const [users, setusers] = useState([])
+  const [departments, setdepartments] = useState()
+  const [editingdata, seteditdata] = useState()
+  const [update, setupdate] = useState(false)
+  useEffect(() => {
+    const loadData = async () => {
+      const res = await fetchDepartments();
+      setdepartments(res);
+      console.log("Res", res);
 
-    fetchusers(setusers);
-  };
+      fetchusers(setusers);
+    };
 
-  loadData();
-}, []);
+    loadData();
+  }, []);
 
 
 
@@ -33,24 +33,24 @@ useEffect(() => {
   };
 
   const openEditModal = async (index) => {
- 
- const res= await fetchDepartmentid(index)
-    console.log("get id resposne",res)
+
+    const res = await fetchDepartmentid(index)
+    console.log("get id resposne", res)
     seteditdata(res.department)
-     setEditingIndex(index);
-     setupdate(true)
-       setIsModalOpen(true);
+    setEditingIndex(index);
+    setupdate(true)
+    setIsModalOpen(true);
 
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-      setupdate(false)
+    setupdate(false)
   }
-  const handleSaveNew = async(data) => {
-    const res= await fetchDepartments();
+  const handleSaveNew = async (data) => {
+    const res = await fetchDepartments();
     setdepartments(res)
-      console.log('dept'+JSON.stringify(departments))
+    console.log('dept' + JSON.stringify(departments))
   };
 
   const handleUpdate = (data) => {
@@ -62,12 +62,12 @@ useEffect(() => {
   };
 
 
-  const handleDelete = async(id) => {
-   await DeleteDepartment(id)
-    const res=await fetchDepartments();
+  const handleDelete = async (id) => {
+    await DeleteDepartment(id)
+    const res = await fetchDepartments();
     setdepartments(res)
-    console.log("Delete",id)
-  
+    console.log("Delete", id)
+
   };
 
   const editingData = editingIndex !== null ? departments[editingIndex] : null;
@@ -84,7 +84,7 @@ useEffect(() => {
       </button>
 
       {/* Render Department Boxes */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-24 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 overflow-hidden items-start gap-24 mt-8">
         {departments?.departments?.length > 0 && departments?.departments?.map((dept, index) => (
           <DepartmentCard
             key={index}
@@ -100,12 +100,12 @@ useEffect(() => {
           <Departmentmodal
             closeModal={closeModal}
             // onSave={editingIndex !== null ? handleUpdate : handleSaveNew}
-            
+
             user={users}
             fetchDepartments={fetchDepartments}
-setdepartments={setdepartments}
-setupdate={setupdate}
-update={update}            editingData={editingdata}
+            setdepartments={setdepartments}
+            setupdate={setupdate}
+            update={update} editingData={editingdata}
             departments={departments}
           />
         </div>

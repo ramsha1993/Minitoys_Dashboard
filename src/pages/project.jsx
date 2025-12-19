@@ -1,59 +1,66 @@
 import React, { useEffect, useState } from 'react'
 import Project from '../components/project/project'
-import { GETDATA,FetchbyId } from '../components/function'
+import { GETDATA, FetchbyId } from '../components/function'
 import ENDPOINTS from '../utils/ENDPOINTS'
 
 
 const project = () => {
-const [data, setData] = useState(null)
-const [showproject,setshowProject]=useState()
- const [serviceCode, setServicecode] = useState()
-const [Vendor, setVendor] = useState()
+  const [data, setData] = useState(null)
+  const [showproject, setshowProject] = useState()
+  const [serviceCode, setServicecode] = useState()
+  const [Vendor, setVendor] = useState()
+  const [Projects, setProjects] = useState()
+  const fetchCapex = async (id) => {
+    const getCapex = await FetchbyId(ENDPOINTS.OTHER.CAPEX_BY_DEPT, id)
+    console.log("getcapex" + getCapex.capex)
+    const res = getCapex.capex
+    console.log("get capex" + JSON.stringify(res))
+    setshowProject(res)
 
-const fetchCapex= async (id)=>{
-const getCapex=await FetchbyId(ENDPOINTS.OTHER.CAPEX_BY_DEPT,id)
-console.log("getcapex"+ getCapex.capex)
-const res=getCapex.capex
-console.log("get capex" +JSON.stringify(res))
-setshowProject(res)
+  }
 
-}
+  const FetchServiceCode = async (id) => {
+    const ServiceCode = await FetchbyId(ENDPOINTS.OTHER.SERVICE_CODE, id)
 
-const FetchServiceCode= async (id)=>{
-const ServiceCode=await FetchbyId(ENDPOINTS.OTHER.SERVICE_CODE,id)
-console.log("getcapex"+ ServiceCode.vendors)
-const res=Vendor.vendors
-console.log("get capex" +JSON.stringify(res))
-setServicecode(res)
+    console.log("ServiceCode" + (ServiceCode))
+    return ServiceCode
 
-}
-
-
-const FetchVendor= async ()=>{
-const response= await GETDATA(ENDPOINTS.OTHER.VENDOR)
-
-setVendor(response.vendors)
-
-}
-
-const fetchProject= async ()=>{
-const response= await GETDATA(ENDPOINTS.OTHER.DEPT_NAMES)
-
-setData(response.departments)
-
-}
+  }
 
 
+  const FetchVendor = async () => {
+    const response = await GETDATA(ENDPOINTS.OTHER.VENDOR)
+
+    setVendor(response.vendors)
+
+  }
 
 
-useEffect(()=>{
-fetchProject()
-FetchVendor()
-FetchServiceCode()
-},[])
+  const FetchProjects = async () => {
+    const response = await GETDATA(ENDPOINTS.OTHER.PROJECT)
+    setProjects(response)
+
+  }
+
+
+  const fetchProject = async () => {
+    const response = await GETDATA(ENDPOINTS.OTHER.DEPT_NAMES)
+
+    setData(response.departments)
+
+  }
+
+
+
+
+  useEffect(() => {
+    fetchProject()
+    FetchVendor()
+    FetchProjects()
+  }, [])
 
   return (
-<Project data={data} Vendor={Vendor} serviceCode={serviceCode}  showproject={showproject} fetchCapex={fetchCapex} />
+    <Project data={data} FetchProjects={FetchProjects} Projects={Projects} Vendor={Vendor} serviceCode={serviceCode} FetchServiceCode={FetchServiceCode} showproject={showproject} fetchCapex={fetchCapex} />
   )
 }
 
