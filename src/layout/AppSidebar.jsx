@@ -30,19 +30,39 @@ const navItems = [
   },
    {
     icon: <GridIcon />,
-    name: "Project",
-    path: "/project",
+    name: "Product",
+    path: "/product",
+    subItems: [{ name: "Add Product", path: "/add-product", pro: false },
+{ name: "Manage Products", path: "/manage-products", pro: false }
+
+
+    ],
   },
    {
     icon: <BoltIcon />,
     name: "Setting",
     path: "/setting",
+
+
   },
   {
     icon: <BoxIcon />,
-    name: "Modules",
-    path: "/modules",
+    name: "Category",
+    path: "/category",
+    subItems: [{ name: "Add Category", path: "/add-category", pro: false },
+      {name: "Manange Category", path: "/manage-category", pro: false}]
   },
+
+
+ {
+    icon: <GridIcon />,
+    name: "Seller",
+    path: "/seller",
+     subItems: [{ name: "Manange Seller", path: "/manage-seller", pro: false },
+      ]
+  
+  },
+
    {
     icon: <GridIcon />,
     name: "Services",

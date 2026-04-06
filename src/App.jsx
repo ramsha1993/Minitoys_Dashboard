@@ -26,6 +26,11 @@ import Modules from "./pages/module";
 import { LoginUser } from "./redux/AuthSlice";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
+import ManageProducts from "./components/Product/manageProduct";
+import AddProduct from "./components/Product/addProduct";
+import AddCategory from "./components/category/category";
+import ManageCategory from "./components/category/manageCategory";
+import ManageSeller from './components/Seller/seller'
 export default function App() {  
    const user = useSelector((state) => state.user.current);
   useEffect(()=>{
@@ -41,14 +46,21 @@ export default function App() {
         <Routes>
           {/* Dashboard Layout */}
       <Route element={<AppLayout />}> 
-        <Route element={<ProtectedRoute />}>
+        {/* <Route element={<ProtectedRoute />}> */}
             <Route index path="/" element={<Home />} />
          
             {/* Others Page */}
             <Route path="/profile" element={<UserProfiles />} />
+
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/blank" element={<Blank />} />
             <Route path="/project" element={<Project />} />
+            <Route path="/add-product" element={<AddProduct /> } />
+            <Route path='/manage-products' element={<ManageProducts />} />
+            <Route path="/add-category" element={<AddCategory />} />
+                        <Route path="/manage-category" element={<ManageCategory />} />
+                        <Route path="manage-seller" element={<ManageSeller /> }/>
+
             <Route path="/setting" element={<Settings />} />
             <Route path="/modules" element={<Modules />} />
               <Route path="/services" element={<Services />} />
@@ -69,7 +81,7 @@ export default function App() {
             {/* Charts */}
             <Route path="/line-chart" element={<LineChart />} />
             <Route path="/bar-chart" element={<BarChart />} />
-          </Route>
+          {/* </Route> */}
    </Route>
           {/* Auth Layout */}
           <Route path="/signin" element={<SignIn />} />
