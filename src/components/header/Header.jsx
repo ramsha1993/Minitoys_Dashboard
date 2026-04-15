@@ -158,6 +158,8 @@ const Header = ({ onClick, onToggle }) => {
           <UserDropdown />
         </div>
       </div>
+      <Toaster position="bottom-right"  reverseOrder={false} />
+
     </header>
   );
 };

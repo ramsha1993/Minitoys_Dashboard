@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
-import { Link } from "react-router";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import { Link, Navigate } from "react-router";
+import { useDispatch,useSelector } from "react-redux";
 import { LogoutUser } from "../../redux/AuthSlice";
 import { User } from "lucide-react";
+import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+useSelector;
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
 const dispatch=useDispatch()
@@ -25,7 +27,23 @@ useEffect(() => {
 function tokendestroy(){
     localStorage.removeItem("token");
 }
+const notify=()=>toast.success("You are Successfully Logged out.")
 
+const handleLoggedOut=()=>{
+   Cookies.remove('authToken')
+   notify()
+setTimeout(()=>{
+
+  Navigate('/signin')
+
+},2000)
+ 
+}
+
+
+
+const user = useSelector((state) => state.auth.user)
+  console.log("user",user?.name)  // user's name
 
   return (
     <div className="relative">
@@ -39,7 +57,9 @@ function tokendestroy(){
           <User size={20} />
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
+        <span className="block mr-1 font-medium text-theme-sm">
+          {/* Musharof */}
+        </span>
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -67,10 +87,10 @@ function tokendestroy(){
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            Musharof Chowdhury
+            {/* Musharof Chowdhury */} {user?.name}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            randomuser@pimjo.com
+            {/* randomuser@pimjo.com */}{user?.email}
           </span>
         </div>
 
@@ -154,7 +174,9 @@ function tokendestroy(){
         <Link
           to="/signin"
           className="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-       onClick={()=>dispatch(LogoutUser())}
+       onClick={()=>
+        handleLoggedOut()
+        }
        >
           <svg
             className="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-gray-300"

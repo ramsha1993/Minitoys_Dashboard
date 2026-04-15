@@ -1,5 +1,9 @@
-import { useState, useMemo } from "react";
-
+import { useState, useMemo, useEffect } from "react";
+import ENDPOINTS from "../../utils/ENDPOINTS";
+import Cookies from 'js-cookie'
+import api from "../../api/axiosinterceptor";
+import { useNavigate } from "react-router";
+import { Toaster, toast } from "react-hot-toast";
 // ─── Mock Data (replace with API call) ───────────────────────────────────────
 const MOCK_CATEGORIES = [
   { id: 1, name: "Gaming", image: "https://images.unsplash.com/photo-1593118247619-e2d6f056869e?w=80&h=80&fit=crop", banner: null, status: "active" },
@@ -25,11 +29,10 @@ function NoImagePlaceholder() {
 
 function StatusBadge({ status }) {
   return (
-    <span className={`inline-block text-xs font-bold px-3 py-1 rounded ${
-      status === "active"
-        ? "bg-green-500 text-white"
-        : "bg-red-100 text-red-600 border border-red-200"
-    }`}>
+    <span className={`inline-block text-xs font-bold px-3 py-1 rounded ${status === "active"
+      ? "bg-green-500 text-white"
+      : "bg-red-100 text-red-600 border border-red-200"
+      }`}>
       {status === "active" ? "Active" : "Inactive"}
     </span>
   );
@@ -48,11 +51,15 @@ function SortIcon({ field, sortField, sortDir }) {
   );
 }
 
-// ─── Tree View ────────────────────────────────────────────────────────────────
 
-function TreeNode({ category, depth = 0, onToggleStatus, onDelete }) {
+
+function TreeNode({ category, depth = 0, onToggleStatus, id, onDelete, image, onEdit }) {
   const [open, setOpen] = useState(true);
   const hasChildren = category.children?.length > 0;
+
+
+
+
 
   return (
     <div className="select-none">
@@ -68,59 +75,93 @@ function TreeNode({ category, depth = 0, onToggleStatus, onDelete }) {
         ) : (
           <span className="w-4" />
         )}
-        {category.image
-          ? <img src={category.image} alt={category.name} className="w-8 h-8 rounded object-cover border border-gray-200" />
+        {image ?
+          <img src={image} alt={category.name} className="w-8 h-8 rounded object-cover border border-gray-200" />
           : <div className="w-8 h-8 rounded bg-gray-100 border border-gray-200 flex items-center justify-center">
-              <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
+            <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
         }
         <span className="text-sm font-semibold text-blue-700 flex-1">{category.name}</span>
         <StatusBadge status={category.status} />
         <div className="flex gap-1.5 ml-2">
-          <button className="w-7 h-7 rounded bg-green-500 hover:bg-green-400 text-white flex items-center justify-center transition-colors" title="Edit">
+          <button className="w-7 h-7 rounded bg-green-500 hover:bg-green-400 text-white flex items-center justify-center transition-colors" title="Edit"
+            onClick={() => onEdit(id)}
+          >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
           </button>
-          <button onClick={() => onDelete(category.id)} className="w-7 h-7 rounded bg-red-500 hover:bg-red-400 text-white flex items-center justify-center transition-colors" title="Delete">
+          <button onClick={() => {
+            onDelete(id)
+            console.log("delete ")
+          }} className="w-7 h-7 rounded bg-red-500 hover:bg-red-400 text-white flex items-center justify-center transition-colors" title="Delete"
+
+
+          >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </button>
-          <button onClick={() => onToggleStatus(category.id)} className="w-7 h-7 rounded bg-yellow-400 hover:bg-yellow-300 text-gray-800 flex items-center justify-center transition-colors" title="Toggle Status">
+          <button onClick={() => onToggleStatus(id)} className="w-7 h-7 rounded bg-yellow-400 hover:bg-yellow-300 text-gray-800 flex items-center justify-center transition-colors" title="Toggle Status">
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
             </svg>
           </button>
         </div>
       </div>
-      {hasChildren && open && category.children.map((child) => (
-        <TreeNode key={child.id} category={child} depth={depth + 1} onToggleStatus={onToggleStatus} onDelete={onDelete} />
-      ))}
-    </div>
+      {
+        hasChildren && open && category.children.map((child) => (
+          <TreeNode key={child.id} category={child} depth={depth + 1} onToggleStatus={onToggleStatus} onDelete={onDelete} />
+        ))
+      }
+    </div >
   );
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ManageCategory() {
+
+
+  const BASEURL = import.meta.env.VITE_BASEURL
   const [categories, setCategories] = useState(MOCK_CATEGORIES);
   const [view, setView] = useState("list"); // "list" | "tree"
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState(null);
   const [sortDir, setSortDir] = useState("asc");
-
+  const navigate = useNavigate()
   const handleToggleStatus = (id) => {
     setCategories((prev) =>
       prev.map((c) => c.id === id ? { ...c, status: c.status === "active" ? "inactive" : "active" } : c)
     );
   };
 
-  const handleDelete = (id) => {
-    setCategories((prev) => prev.filter((c) => c.id !== id));
+  const handleDelete = async (id) => {
+    try {
+      const response = await api.delete({
+        url: `${ENDPOINTS.OTHER.CATEGORY}/${id}`
+      });
+
+      if (response.success) {
+        setCategories((prev) => prev.filter((c) => c.id !== id));
+        FetchCategory()
+        toast.success("Category deleted successfully");
+
+      }
+
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to delete category");
+      console.error("Delete category error:", error?.message);
+    }
   };
+  const handleEdit = async (id) => {
+    console.log("Edit works")
+    return navigate(`/update-category/${id}`)
+  }
+
+
 
   const handleSort = (field) => {
     if (sortField === field) setSortDir((d) => d === "asc" ? "desc" : "asc");
@@ -144,6 +185,23 @@ export default function ManageCategory() {
   // Build tree from flat list (parent_id based — adapt when API is connected)
   const treeData = useMemo(() => filtered.map((c) => ({ ...c, children: [] })), [filtered]);
 
+
+  const [category, setcategory] = useState()
+  const token = Cookies.get("authToken")
+  const FetchCategory = async () => {
+    const response = await api.get({ url: `${ENDPOINTS.OTHER.CATEGORY}/all` })
+    // console.log("response", response)
+    setcategory(response.categories)
+    // }
+  }
+  useEffect(() => {
+
+    if (token) {
+      FetchCategory()
+    }
+  }, [token])
+
+
   return (
     <div className="min-h-screen bg-white font-sans">
 
@@ -166,9 +224,8 @@ export default function ManageCategory() {
             <div className="flex rounded-lg overflow-hidden border border-blue-700">
               <button
                 onClick={() => setView("list")}
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-colors ${
-                  view === "list" ? "bg-blue-700 text-white" : "bg-white text-blue-700 hover:bg-blue-50"
-                }`}
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-colors ${view === "list" ? "bg-blue-700 text-white" : "bg-white text-blue-700 hover:bg-blue-50"
+                  }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -177,9 +234,8 @@ export default function ManageCategory() {
               </button>
               <button
                 onClick={() => setView("tree")}
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-colors border-l border-blue-700 ${
-                  view === "tree" ? "bg-blue-700 text-white" : "bg-white text-blue-700 hover:bg-blue-50"
-                }`}
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-colors border-l border-blue-700 ${view === "tree" ? "bg-blue-700 text-white" : "bg-white text-blue-700 hover:bg-blue-50"
+                  }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h6M3 12h4m-4 5h6M13 7h8M13 12h8M13 17h8" />
@@ -189,7 +245,9 @@ export default function ManageCategory() {
             </div>
 
             {/* Add Category */}
-            <button className="border border-blue-700 text-blue-700 hover:bg-blue-700 hover:text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors duration-150">
+            <button className="border border-blue-700 text-blue-700 hover:bg-blue-700 hover:text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors duration-150"
+              onClick={() => { navigate('/add-category') }}
+            >
               Add Category
             </button>
           </div>
@@ -237,7 +295,7 @@ export default function ManageCategory() {
                     {[
                       { label: "Name", field: "name" },
                       { label: "Image", field: "image" },
-                      { label: "Banner", field: "banner" },
+                      // { label: "Banner", field: "banner" },
                       { label: "Status", field: "status" },
                     ].map(({ label, field }) => (
                       <th
@@ -257,14 +315,14 @@ export default function ManageCategory() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {filtered.length === 0 ? (
+                  {category?.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="px-6 py-16 text-center text-gray-400 text-sm">
                         No categories found.
                       </td>
                     </tr>
                   ) : (
-                    filtered.map((cat) => (
+                    category?.map((cat) => (
                       <tr key={cat.id} className="hover:bg-blue-50/30 transition-colors">
                         {/* Name */}
                         <td className="px-6 py-4 text-center">
@@ -277,21 +335,21 @@ export default function ManageCategory() {
                         <td className="px-6 py-4 text-center">
                           <div className="flex justify-center">
                             {cat.image
-                              ? <img src={cat.image} alt={cat.name} className="w-16 h-16 object-cover rounded-lg border border-gray-200 shadow-sm" />
+                              ? <img src={`${BASEURL}/${cat.image}`} alt={cat.name} className="w-16 h-16 object-cover rounded-lg border border-gray-200 shadow-sm" />
                               : <NoImagePlaceholder />
                             }
                           </div>
                         </td>
 
                         {/* Banner */}
-                        <td className="px-6 py-4 text-center">
+                        {/* <td className="px-6 py-4 text-center">
                           <div className="flex justify-center">
                             {cat.banner
                               ? <img src={cat.banner} alt="banner" className="w-24 h-14 object-cover rounded-lg border border-gray-200 shadow-sm" />
                               : <NoImagePlaceholder />
                             }
                           </div>
-                        </td>
+                        </td> */}
 
                         {/* Status */}
                         <td className="px-6 py-4 text-center">
@@ -302,7 +360,7 @@ export default function ManageCategory() {
                         <td className="px-6 py-4">
                           <div className="flex items-center justify-center gap-1.5">
                             {/* Edit */}
-                            <button className="w-8 h-8 rounded bg-green-500 hover:bg-green-400 text-white flex items-center justify-center transition-colors" title="Edit">
+                            <button className="w-8 h-8 rounded bg-green-500 hover:bg-green-400 text-white flex items-center justify-center transition-colors" title="Edit" onClick={() => handleEdit(cat.id)}>
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                               </svg>
@@ -320,23 +378,26 @@ export default function ManageCategory() {
                               </svg>
                             </button>
                           </div>
+
                         </td>
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
+              <Toaster position="bottom-right" reverseOrder={false} />
+
             </div>
           )}
 
           {/* ── TREE VIEW ── */}
           {view === "tree" && (
             <div className="divide-y divide-gray-100">
-              {treeData.length === 0 ? (
+              {category.length === 0 ? (
                 <p className="px-6 py-16 text-center text-gray-400 text-sm">No categories found.</p>
               ) : (
-                treeData.map((cat) => (
-                  <TreeNode key={cat.id} category={cat} onToggleStatus={handleToggleStatus} onDelete={handleDelete} />
+                category.map((cat) => (
+                  <TreeNode key={cat.id} id={cat.id} category={cat} onToggleStatus={handleToggleStatus} onDelete={handleDelete} onEdit={handleEdit} image={`${BASEURL}/${cat.image}`} />
                 ))
               )}
             </div>

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import NotFound from "./pages/OtherPage/NotFound";
@@ -21,7 +21,6 @@ import Home from "./pages/Dashboard/Home";
 import Project from "./pages/project";
 import Settings from "./pages/setting";
 import Services from "./components/services";
-import ProtectedRoute from "./components/protectedroutes";
 import Modules from "./pages/module";
 import { LoginUser } from "./redux/AuthSlice";
 import { useSelector } from "react-redux";
@@ -31,12 +30,13 @@ import AddProduct from "./components/Product/addProduct";
 import AddCategory from "./components/category/category";
 import ManageCategory from "./components/category/manageCategory";
 import ManageSeller from './components/Seller/seller'
-export default function App() {  
-   const user = useSelector((state) => state.user.current);
-  useEffect(()=>{
-    console.log("logged in " + JSON.stringify(user))
-  },[])
- 
+import Cookie from 'js-cookie'
+import ProtectedRoute from "./components/auth/protectedRoute";
+import AddSeller from "./components/Seller/addSelller";
+export default function App() {
+
+
+
 
   return (
     <>
@@ -45,54 +45,58 @@ export default function App() {
         <ScrollToTop />
         <Routes>
           {/* Dashboard Layout */}
-      <Route element={<AppLayout />}> 
-        {/* <Route element={<ProtectedRoute />}> */}
+          <Route element={<AppLayout />}>
+            {/* <Route element={<ProtectedRoute />}> */}
             <Route index path="/" element={<Home />} />
-         
+
             {/* Others Page */}
             <Route path="/profile" element={<UserProfiles />} />
 
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/blank" element={<Blank />} />
             <Route path="/project" element={<Project />} />
-            <Route path="/add-product" element={<AddProduct /> } />
-            <Route path='/manage-products' element={<ManageProducts />} />
-            <Route path="/add-category" element={<AddCategory />} />
-                        <Route path="/manage-category" element={<ManageCategory />} />
-                        <Route path="manage-seller" element={<ManageSeller /> }/>
+            <Route path="/add-product" element={<ProtectedRoute><AddProduct /></ProtectedRoute>} />
+            <Route path='/manage-products' element={<ProtectedRoute><ManageProducts /> </ProtectedRoute>} />
+            <Route path="/update-product/:slug" element={<ProtectedRoute><AddProduct /></ProtectedRoute>} />
 
-            <Route path="/setting" element={<Settings />} />
-            <Route path="/modules" element={<Modules />} />
-              <Route path="/services" element={<Services />} />
+            <Route path="/add-category" element={<ProtectedRoute><AddCategory /></ProtectedRoute>} />
+            <Route path="/update-category/:id" element={<ProtectedRoute><AddCategory /></ProtectedRoute>} />
+            <Route path="/manage-category" element={<ProtectedRoute><ManageCategory /> </ProtectedRoute>} />
+            <Route path="manage-seller" element={<ProtectedRoute><ManageSeller /></ProtectedRoute>} />
+            <Route path="/add-seller" element={<ProtectedRoute><AddSeller /></ProtectedRoute>} />
+            <Route path="/update-seller/:id" element={<ProtectedRoute><AddSeller /></ProtectedRoute>} />
+
+            {/* <Route path="/setting" element={<Settings />} /> */}
+            {/* <Route path="/modules" element={<Modules />} /> */}
+            {/* <Route path="/services" element={<Services />} /> */}
             {/* Forms */}
-            <Route path="/form-elements" element={<FormElements />} />
-       
+            {/* <Route path="/form-elements" element={<FormElements />} /> */}
+
             {/* Tables */}
-            <Route path="/basic-tables" element={<BasicTables />} />
+            {/* <Route path="/basic-tables" element={<BasicTables />} /> */}
 
             {/* Ui Elements */}
-            <Route path="/alerts" element={<Alerts />} />
+            {/* <Route path="/alerts" element={<Alerts />} />
             <Route path="/avatars" element={<Avatars />} />
             <Route path="/badge" element={<Badges />} />
             <Route path="/buttons" element={<Buttons />} />
             <Route path="/images" element={<Images />} />
-            <Route path="/videos" element={<Videos />} />
+            <Route path="/videos" element={<Videos />} /> */}
 
             {/* Charts */}
-            <Route path="/line-chart" element={<LineChart />} />
-            <Route path="/bar-chart" element={<BarChart />} />
-          {/* </Route> */}
-   </Route>
+            {/* <Route path="/line-chart" element={<LineChart />} />
+            <Route path="/bar-chart" element={<BarChart />} /> */}
+            {/* </Route> */}
+          </Route>
           {/* Auth Layout */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
 
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />
-       
+
         </Routes>
       </Router>
 
-    </>
-  );
+    </>)
 }

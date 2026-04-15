@@ -1,7 +1,7 @@
 
 const ENDPOINTS = {
   AUTH: {
-    LOGIN: `users/login`,
+    LOGIN: `v1/user/admin/login`,
     REGISTER: `users/register`,
     SEND_OTP: `otp/send-otp`,
     VERIFY_OTP: `otp/verify-otp`,
@@ -11,17 +11,11 @@ const ENDPOINTS = {
   },
   OTHER:
   {
-    DEPARTMENT: `department`,
-    CAPEX: `capex`,
-    MODULE: 'modules',
-    USERS_LIST: `users/list`,
-    CAPEX_CATEGORIES: 'capex-categories',
-    VENDOR: 'vendors',
-    ROLE: 'roles',
-    DEPT_NAMES: 'department/names',
-    CAPEX_BY_DEPT: 'capex/department',
-    SERVICE_CODE: 'service-codes/department',
-    PROJECT: 'projects'
+
+    PRODUCTS: 'v1/product',
+    USERS: 'v1/user',
+    CATEGORY: 'v1/category'
+
   }
 
 

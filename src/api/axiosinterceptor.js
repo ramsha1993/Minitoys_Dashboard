@@ -4,7 +4,7 @@ import { LogoutUser } from "../redux/AuthSlice";
 // base url
 // adding url method url concatenate with base url
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "http://localhost:4000",
 
   timeout: 600000,
   headers: {

@@ -6,19 +6,21 @@ import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import { useFormik } from "formik";
-import api from "../../api/axiosinterceptor"; 
-import  ENDPOINTS  from "../../utils/ENDPOINTS";
+import api from "../../api/axiosinterceptor";
+import ENDPOINTS from "../../utils/ENDPOINTS";
 import toast, { Toaster } from "react-hot-toast";
 // import { setUser } from "../../redux/user";
 import { useDispatch } from "react-redux";
 import { LoginUser } from "../../redux/AuthSlice";
 // import { showToast } from "../../utils/showToast";
+import Cookies from "js-cookie";
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const notify = () => toast.success("You are successfully logged in");
 
   // ---------------- Formik Setup ----------------
   const formik = useFormik({
@@ -34,7 +36,7 @@ export default function SignInForm() {
   // -------
   const handleSubmit = async (values) => {
 
-      
+
     try {
       const response = await api.post({
         url: ENDPOINTS.AUTH.LOGIN,
@@ -45,23 +47,35 @@ export default function SignInForm() {
       });
 
       // if (response) {
-        console.log("Login response:", response);
-        navigate("/");
-  dispatch(LoginUser({ user: response.user, token: response.token }));
+      console.log("Login response:", response);
+      if (response.success) {
+        const token = response.token;
+        Cookies.set("authToken", token, {
+          expires: 1,
+          secure: false,
+          sameSite: "Lax"
+        })
+        console.log("token", token)
+        notify();
+        setTimeout(() => {
+          navigate("/");
 
-console.log("DISPATCHING TO REDUX:", {
-  user: response.user,
-  token: response.token
-});
+        }, 2000);
+        dispatch(LoginUser({ user: response.user, token: response.token }));
+
+        console.log("DISPATCHING TO REDUX:", {
+          user: response.user,
+          token: response.token
+        });
         // dispatch(setUser({ user: response.user.full_name }));
-        
-      // }
-    } 
-    
-    
+
+        // }
+      }
+
+    }
     catch (error) {
-      console.log("error"+ error?.message);
-  toast.error(error?.response?.data?.message || "Something went wrong. Please try again!");
+      console.log("error" + error?.message);
+      toast.error(error?.response?.data?.message || "Something went wrong. Please try again!");
     }
   };
 
@@ -94,7 +108,7 @@ console.log("DISPATCHING TO REDUX:", {
 
           {/* ------------------ FORM ------------------ */}
           {/* calls my onsubmit after validation */}
-<form onSubmit={formik.handleSubmit}>
+          <form onSubmit={formik.handleSubmit}>
             <div className="space-y-6">
 
               {/* Email */}
@@ -175,7 +189,7 @@ console.log("DISPATCHING TO REDUX:", {
               </Link>
             </p>
           </div>
-<Toaster position="bottom-right"  reverseOrder={false} />
+          <Toaster position="bottom-right" reverseOrder={false} />
         </div>
       </div>
     </div>

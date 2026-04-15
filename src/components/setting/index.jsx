@@ -213,7 +213,7 @@ export default function DepartmentBudgets({user,fetchusers,departments,fetchcape
         <div>
           {/* Users UI */}
    
-          <User/>
+          <User />
         </div>
       )}
 
