@@ -55,7 +55,9 @@ export default function SignInForm() {
           secure: false,
           sameSite: "Lax"
         })
+
         console.log("token", token)
+        localStorage.setItem("auth", JSON.stringify(response.user))
         notify();
         setTimeout(() => {
           navigate("/");

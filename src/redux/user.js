@@ -4,7 +4,7 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     // Initialize the user state from localStorage if available
-    user: JSON.parse(localStorage.getItem("user")) || null, 
+    user: JSON.parse(localStorage.getItem("user")) || null,
   },
   reducers: {
     // Set the user data in Redux and localStorage
@@ -12,7 +12,7 @@ const userSlice = createSlice({
       state.user = action.payload;
       localStorage.setItem("user", JSON.stringify(action.payload)); // Save user to localStorage
     },
-    
+
     // Clear the user data in Redux and localStorage
     clearUser: (state) => {
       state.user = null;

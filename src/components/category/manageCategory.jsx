@@ -127,10 +127,14 @@ export default function ManageCategory() {
 
   const BASEURL = import.meta.env.VITE_BASEURL
   const [categories, setCategories] = useState(MOCK_CATEGORIES);
+
+  const [category, setcategory] = useState()
   const [view, setView] = useState("list"); // "list" | "tree"
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState(null);
   const [sortDir, setSortDir] = useState("asc");
+  const [searchTerm, setSearchTerm] = useState();
+  const [filterCategories, setfilterCategories] = useState()
   const navigate = useNavigate()
   const handleToggleStatus = (id) => {
     setCategories((prev) =>
@@ -161,32 +165,61 @@ export default function ManageCategory() {
     return navigate(`/update-category/${id}`)
   }
 
+  const applyFilters = (search) => {
+    let filtered = [...category]
 
+
+    if (search) {
+      console.log('search term', search)
+      console.log('filterCategories', filterCategories)
+      const normalizedSearch = search.trim().toLowerCase()
+      filtered = filtered.filter((elem) =>
+        elem.name.trim().toLowerCase().includes(normalizedSearch)
+      )
+      setfilterCategories(filtered)
+
+
+    }
+  }
+
+
+  const handleSearchFilter = (e) => {
+    const selectedSearch = e.target.value
+    console.log("search value", e.target.value)
+    setSearchTerm(selectedSearch)
+    applyFilters(selectedSearch)
+
+  }
 
   const handleSort = (field) => {
     if (sortField === field) setSortDir((d) => d === "asc" ? "desc" : "asc");
     else { setSortField(field); setSortDir("asc"); }
   };
 
-  const filtered = useMemo(() => {
-    let list = categories.filter((c) =>
-      c.name.toLowerCase().includes(search.toLowerCase())
-    );
-    if (sortField) {
-      list = [...list].sort((a, b) => {
-        const va = a[sortField]?.toLowerCase?.() ?? "";
-        const vb = b[sortField]?.toLowerCase?.() ?? "";
-        return sortDir === "asc" ? va.localeCompare(vb) : vb.localeCompare(va);
-      });
-    }
-    return list;
-  }, [categories, search, sortField, sortDir]);
+  // const filtered = useMemo(() => {
+  //   let list = categories.filter((c) =>
+  //     c.name.toLowerCase().includes(search.toLowerCase())
+  //   );
+
+
+
+  //     if (sortField) {
+  //     list = [...list].sort((a, b) => {
+  //       const va = a[sortField]?.toLowerCase?.() ?? "";
+  //       const vb = b[sortField]?.toLowerCase?.() ?? "";
+  //       return sortDir === "asc" ? va.localeCompare(vb) : vb.localeCompare(va);
+  //     });
+  //   }
+  //   return list;
+  // }, [categories, search, sortField, sortDir]);
 
   // Build tree from flat list (parent_id based — adapt when API is connected)
-  const treeData = useMemo(() => filtered.map((c) => ({ ...c, children: [] })), [filtered]);
 
 
-  const [category, setcategory] = useState()
+  // const treeData = useMemo(() => filtered.map((c) => ({ ...c, children: [] })), [filtered]);
+
+
+
   const token = Cookies.get("authToken")
   const FetchCategory = async () => {
     const response = await api.get({ url: `${ENDPOINTS.OTHER.CATEGORY}/all` })
@@ -200,6 +233,7 @@ export default function ManageCategory() {
       FetchCategory()
     }
   }, [token])
+  const Categoires = !searchTerm == '' && Array.isArray(filterCategories) && filterCategories.length > 0 ? filterCategories : category;
 
 
   return (
@@ -260,8 +294,8 @@ export default function ManageCategory() {
                 <input
                   type="text"
                   placeholder="Search..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  value={searchTerm}
+                  onChange={handleSearchFilter}
                   className="border border-gray-300 rounded-lg pl-9 pr-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-52"
                 />
                 <svg className="w-4 h-4 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -322,7 +356,7 @@ export default function ManageCategory() {
                       </td>
                     </tr>
                   ) : (
-                    category?.map((cat) => (
+                    Categoires?.map((cat) => (
                       <tr key={cat.id} className="hover:bg-blue-50/30 transition-colors">
                         {/* Name */}
                         <td className="px-6 py-4 text-center">
@@ -405,7 +439,7 @@ export default function ManageCategory() {
 
           {/* Footer */}
           <div className="px-6 py-3.5 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-            <span>Showing {filtered.length} of {categories.length} categories</span>
+            {/* <span>Showing {filtered.length} of {categories.length} categories</span> */}
             <div className="flex items-center gap-1">
               <button className="px-3 py-1.5 rounded border border-gray-300 hover:bg-gray-100 transition-colors text-gray-600 font-medium">← Prev</button>
               <button className="px-3 py-1.5 rounded border border-blue-700 bg-blue-700 hover:bg-blue-500 transition-colors text-white font-semibold">1</button>

@@ -5,6 +5,7 @@ import Cookies from 'js-cookie'
 import api from "../../api/axiosinterceptor";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router";
+import { FetchCategory } from "../../services/categoriesService";
 
 
 
@@ -104,6 +105,8 @@ export default function ManageProducts() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [category, setCategory] = useState([])
+  const [filteredProducts, setFilteredProducts] = useState()
   const [sellerFilter, setSellerFilter] = useState("All");
   const [showModal, setShowModal] = useState(false);
   const [sortField, setSortField] = useState(null);
@@ -116,6 +119,8 @@ export default function ManageProducts() {
 
   const navigate = useNavigate()
 
+
+
   const FetchProducts = async () => {
     if (token) {
       const response = await api.get({
@@ -126,17 +131,82 @@ export default function ManageProducts() {
 
     }
   }
+  const fetchCategoryNames = async () => {
+    try {
+      const response = await FetchCategory()
+      console.log('category response', response)
+      setCategory(response.categories)
+    }
+    catch (error) {
+      // toast.error(error)
+      console.log("error", error)
+    }
+  }
+
+  const applyFilters = (category, search) => {
+    let filtered = [...Product]
+
+    if (category) {
+      filtered = filtered.filter((elem) =>
+        elem.category_id == category)
+
+
+    }
+
+    console.log("filtered item", filtered)
+    if (search) {
+      const normalizedSearch = search.trim().toLowerCase()
+      filtered = filtered.filter((elem) =>
+        elem.name.trim().toLowerCase().includes(normalizedSearch)
+      )
+
+    }
+    console.log("filtered products", filtered)
+    setFilteredProducts(filtered)
+  }
+
+
+  const handleCategoryFilter = (e) => {
+    const selectCategory = e.target.value
+    setCategoryFilter(selectCategory)
+    applyFilters(selectCategory, search)
+    console.log("selectcategory", selectCategory)
+  }
+
+  const handleSearchFilter = (e) => {
+    const selectedSearch = e.target.value
+    setSearch(selectedSearch)
+    applyFilters(categoryFilter, selectedSearch)
+
+
+  }
+
+
+
+
   useEffect(() => {
 
     FetchProducts()
+    fetchCategoryNames()
   }, [])
 
 
   const totalPages = Math.ceil((Product?.length || 0) / itemsPerPage)
-  const paginatedProducts = Product?.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
+  const paginatedProducts = (filteredProducts && filteredProducts.length > 0)
+    ? filteredProducts.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    )
+    : Product?.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
+  useEffect(() => {
+    console.log("filtered", filteredProducts)
+    console.log("filtered", categoryFilter)
+  }, [filteredProducts])
+
+
   const handleToggle = (id) => {
     setProducts((prev) =>
       prev.map((p) =>
@@ -244,15 +314,16 @@ export default function ManageProducts() {
               <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Filter By Product Category</label>
               <select
                 value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
+                onChange={handleCategoryFilter}
                 className="border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700 bg-white min-w-[180px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
               >
-                {categories.map((c) => (
-                  <option key={c}>{c === "All" ? "Select Categories" : c}</option>
+                <option value="">Select Category</option>
+                {category.map((c, i) => (
+                  <option value={c.id} key={i}>{c === "All" ? "Select Categories" : c.name}</option>
                 ))}
               </select>
             </div>
-            <div className="flex flex-col gap-1">
+            {/* <div className="flex flex-col gap-1">
               <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Filter By Product Status</label>
               <select
                 value={statusFilter}
@@ -263,7 +334,7 @@ export default function ManageProducts() {
                   <option key={s}>{s === "All" ? "Select Status" : s.charAt(0).toUpperCase() + s.slice(1)}</option>
                 ))}
               </select>
-            </div>
+            </div> */}
             <div className="flex flex-col gap-1">
               <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Filter By Seller</label>
               <select
@@ -284,7 +355,7 @@ export default function ManageProducts() {
                   type="text"
                   placeholder="Search..."
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={handleSearchFilter}
                   className="border border-gray-300 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-56"
                 />
                 <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -346,7 +417,7 @@ export default function ManageProducts() {
                     </td>
                   </tr>
                 ) : (
-                  paginatedProducts?.map((product) => (
+                  paginatedProducts?.map((product, i) => (
                     <tr key={product.id} className="hover:bg-blue-50/30 transition-colors duration-100">
                       <td className="px-6 py-4">
                         <img
@@ -365,7 +436,7 @@ export default function ManageProducts() {
                       {/* <td className="px-6 py-4 text-gray-600 font-medium">{product.brand}</td> */}
                       <td className="px-6 py-4 max-w-sm">
                         <span className="inline-block bg-blue-50 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-blue-100">
-                          {product.category_id}
+                          {category && category.find((cat) => cat.id === product.category_id)?.name || '-'}
                         </span>
                       </td>
                       {/* <td className="px-6 py-4"> */}

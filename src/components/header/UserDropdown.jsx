@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link, Navigate } from "react-router";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { LogoutUser } from "../../redux/AuthSlice";
 import { User } from "lucide-react";
 import Cookies from "js-cookie";
@@ -10,13 +10,15 @@ import toast from "react-hot-toast";
 useSelector;
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-const dispatch=useDispatch()
-const token = useSelector((state) => state.auth.token);
-console.log("Redux token in component:", token);
-useEffect(() => {
-  console.log("Token changed:", token);
-  // You can run any code here whenever token changes
-}, [token]);
+  const dispatch = useDispatch()
+  const token = useSelector((state) => state.auth.token);
+  const [user, setUser] = useState()
+
+  console.log("Redux token in component:", token);
+  useEffect(() => {
+    console.log("Token changed:", token);
+    // You can run any code here whenever token changes
+  }, [token]);
   function toggleDropdown() {
     setIsOpen(!isOpen);
   }
@@ -24,26 +26,31 @@ useEffect(() => {
   function closeDropdown() {
     setIsOpen(false);
   }
-function tokendestroy(){
+  function tokendestroy() {
     localStorage.removeItem("token");
-}
-const notify=()=>toast.success("You are Successfully Logged out.")
+  }
+  const notify = () => toast.success("You are Successfully Logged out.")
 
-const handleLoggedOut=()=>{
-   Cookies.remove('authToken')
-   notify()
-setTimeout(()=>{
+  const handleLoggedOut = () => {
+    Cookies.remove('authToken')
+    localStorage.removeItem('auth')
+    localStorage.removeItem('token')
+    notify()
+    setTimeout(() => {
 
-  Navigate('/signin')
+      Navigate('/signin')
 
-},2000)
- 
-}
+    }, 2000)
+
+  }
+
+  useEffect(() => {
+    const auth = JSON.parse(localStorage.getItem('auth'))
+    setUser(auth)
 
 
+  }, [])
 
-const user = useSelector((state) => state.auth.user)
-  console.log("user",user?.name)  // user's name
 
   return (
     <div className="relative">
@@ -61,9 +68,8 @@ const user = useSelector((state) => state.auth.user)
           {/* Musharof */}
         </span>
         <svg
-          className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
+            }`}
           width="18"
           height="20"
           viewBox="0 0 18 20"
@@ -87,10 +93,12 @@ const user = useSelector((state) => state.auth.user)
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            {/* Musharof Chowdhury */} {user?.name}
+            {/* Musharof Chowdhury */}
+            {user?.name}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            {/* randomuser@pimjo.com */}{user?.email}
+            {/* randomuser@pimjo.com */}
+            {user?.email}
           </span>
         </div>
 
@@ -174,10 +182,10 @@ const user = useSelector((state) => state.auth.user)
         <Link
           to="/signin"
           className="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-       onClick={()=>
-        handleLoggedOut()
-        }
-       >
+          onClick={() =>
+            handleLoggedOut()
+          }
+        >
           <svg
             className="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-gray-300"
             width="24"

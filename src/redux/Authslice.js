@@ -4,21 +4,21 @@ const Authslice = createSlice({
   name: "auth",
   initialState: {
     user: null,
-    token: null,  
+    token: null,
     isLoggedIn: false,
   },
   reducers: {
     LoginUser: (state, action) => {
-        console.log("REDUX RECEIVED PAYLOAD:", action.payload);
+      console.log("REDUX RECEIVED PAYLOAD:", action.payload);
 
       state.user = action.payload.user;
       state.token = action.payload.token;
-        localStorage.setItem("token", state.token);
+      localStorage.setItem("token", state.token);
       console.log("My token" + state.token)
-            console.log("My user" + state.user.name)
+      console.log("My user" + state.user.name)
 
       state.isLoggedIn = true;
-            
+
 
     },
     LogoutUser: (state) => {

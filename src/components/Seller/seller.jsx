@@ -10,20 +10,47 @@ const ManageSeller = () => {
 
   const [filterStatus, setFilterStatus] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
-
-  const statusOptions = ['All', 'Active', 'Inactive'];
+  const [filteredSellers, setFilteredSellers] = useState()
+  const statusOptions = ['All', 'Active', 'Pending', 'Suspended', 'InActive'];
   const navigate = useNavigate()
   // const filteredSellers = sellers.filter(seller =>
   //   seller.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
   //   seller.email.toLowerCase().includes(searchTerm.toLowerCase())
   // );
 
+
   const [sellers, setSellers] = useState(null)
   const token = Cookies.get("authToken")
 
 
+  const applyFilters = (status, search) => {
+    let filtered = [...sellers]
 
+    if (status) {
+      const sellerStatus = status.toLowerCase()
+      filtered = filtered.filter((elem) =>
+        elem.status == sellerStatus
+      )
+      setFilteredSellers(filtered)
+    }
+    console.log("filtered item", filtered)
+    if (search) {
+      const normalizedSearch = search.trim().toLowerCase()
+      filtered = filtered.filter((elem) =>
+        elem.name.trim().toLowerCase().includes(normalizedSearch)
+      )
+      setFilteredSellers(filtered)
+    }
+    console.log("filtered products", filtered)
+    setFilteredSellers(filtered)
+  }
 
+  const handleSearchFilter = (e) => {
+    const selectedSearch = e.target.value
+    setSearchTerm(selectedSearch)
+    applyFilters(filterStatus, selectedSearch)
+
+  }
   const FetchSellers = async () => {
     const response = await api.get({
       url: `${ENDPOINTS.OTHER.USERS}/all`
@@ -32,21 +59,14 @@ const ManageSeller = () => {
   }
   useEffect(() => {
     if (token) {
-
-
       FetchSellers()
     }
-
-
-
   }, [])
 
-  useEffect(() => {
-    console.log("sellers", sellers)
-  }, [sellers])
-
-  const handleStatusFilter = (status) => {
-    setFilterStatus(status);
+  const handleStatusFilter = (e) => {
+    const selectStatus = e.target.value
+    setFilterStatus(selectStatus)
+    applyFilters(selectStatus, searchTerm)
   };
 
   const handleUpdateCommission = (sellerId) => {
@@ -77,7 +97,7 @@ const ManageSeller = () => {
   };
 
 
-
+  const Sellers = (filteredSellers && filteredSellers.length > 0 ? filteredSellers : sellers)
 
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -94,12 +114,12 @@ const ManageSeller = () => {
                 Update Seller
               </span>
             </div>
-            <button className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            {/* <button className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
 
               onClick={() => { setIsModalOpen(true) }}
             >
               Add Seller
-            </button>
+            </button> */}
           </div>
 
           {/* Note */}
@@ -116,7 +136,7 @@ const ManageSeller = () => {
                 <label className="text-sm font-medium text-gray-700">Filter By Status:</label>
                 <select
                   value={filterStatus}
-                  onChange={(e) => handleStatusFilter(e.target.value)}
+                  onChange={handleStatusFilter}
                   className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                 >
                   {statusOptions.map(status => (
@@ -129,7 +149,7 @@ const ManageSeller = () => {
                   type="text"
                   placeholder="Search by name or email"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={handleSearchFilter}
                   className="w-full md:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,7 +179,7 @@ const ManageSeller = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {sellers?.filter((seller) => seller.role == "vendor").map((seller) => (
+                  {Sellers?.filter((seller) => seller.role == "vendor").map((seller) => (
 
                     <tr key={seller.id} className="hover:bg-gray-50 transition-colors duration-150">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">

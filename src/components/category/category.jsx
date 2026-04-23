@@ -62,6 +62,7 @@ export default function AddCategory() {
     if (Object.keys(e).length > 0) return;  // ✅ stop if 
     const formData = new FormData()
     formData.append("name", formValues.name)
+    console.log("formvalues.image", formValues.image)
     formData.append("image", formValues.image)
 
     try {
@@ -92,14 +93,11 @@ export default function AddCategory() {
           setFormValues({ name: '', image: '' })
           setMainPreview(null)
           setSubmitted(true)
+          toast.success("Category Added successfully");
 
-          if (res.success) {
-            toast.success("Category Added successfully");
 
-          }
 
         }
-        console.log("response", response)
       }
     }
     catch (error) {

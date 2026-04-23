@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import NotFound from "./pages/OtherPage/NotFound";
+import Order from './components/Order/order'
 import UserProfiles from "./pages/UserProfiles";
 import Videos from "./pages/UiElements/Videos";
 import Images from "./pages/UiElements/Images";
@@ -33,6 +34,7 @@ import ManageSeller from './components/Seller/seller'
 import Cookie from 'js-cookie'
 import ProtectedRoute from "./components/auth/protectedRoute";
 import AddSeller from "./components/Seller/addSelller";
+import AdminProtectedroute from './components/auth/adminProtectedRoute'
 export default function App() {
 
 
@@ -50,43 +52,24 @@ export default function App() {
             <Route index path="/" element={<Home />} />
 
             {/* Others Page */}
-            <Route path="/profile" element={<UserProfiles />} />
+            <Route path="/profile" element={<ProtectedRoute><UserProfiles /> </ProtectedRoute>} />
 
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/blank" element={<Blank />} />
-            <Route path="/project" element={<Project />} />
+            <Route path="/project" element={<ProtectedRoute> <Project /></ProtectedRoute>} />
             <Route path="/add-product" element={<ProtectedRoute><AddProduct /></ProtectedRoute>} />
             <Route path='/manage-products' element={<ProtectedRoute><ManageProducts /> </ProtectedRoute>} />
             <Route path="/update-product/:slug" element={<ProtectedRoute><AddProduct /></ProtectedRoute>} />
+            <Route path="/order" element={<ProtectedRoute><Order /></ProtectedRoute>} />
 
-            <Route path="/add-category" element={<ProtectedRoute><AddCategory /></ProtectedRoute>} />
-            <Route path="/update-category/:id" element={<ProtectedRoute><AddCategory /></ProtectedRoute>} />
+            <Route path="/add-category" element={<AdminProtectedroute><AddCategory /></AdminProtectedroute>} />
+            <Route path="/update-category/:id" element={<AdminProtectedroute><AddCategory /></AdminProtectedroute>} />
             <Route path="/manage-category" element={<ProtectedRoute><ManageCategory /> </ProtectedRoute>} />
-            <Route path="manage-seller" element={<ProtectedRoute><ManageSeller /></ProtectedRoute>} />
-            <Route path="/add-seller" element={<ProtectedRoute><AddSeller /></ProtectedRoute>} />
-            <Route path="/update-seller/:id" element={<ProtectedRoute><AddSeller /></ProtectedRoute>} />
+            <Route path="manage-seller" element={<AdminProtectedroute><ManageSeller /></AdminProtectedroute>} />
+            <Route path="/add-seller" element={<AdminProtectedroute><AddSeller /></AdminProtectedroute>} />
+            <Route path="/update-seller/:id" element={<AdminProtectedroute><AddSeller /></AdminProtectedroute>} />
 
-            {/* <Route path="/setting" element={<Settings />} /> */}
-            {/* <Route path="/modules" element={<Modules />} /> */}
-            {/* <Route path="/services" element={<Services />} /> */}
-            {/* Forms */}
-            {/* <Route path="/form-elements" element={<FormElements />} /> */}
 
-            {/* Tables */}
-            {/* <Route path="/basic-tables" element={<BasicTables />} /> */}
-
-            {/* Ui Elements */}
-            {/* <Route path="/alerts" element={<Alerts />} />
-            <Route path="/avatars" element={<Avatars />} />
-            <Route path="/badge" element={<Badges />} />
-            <Route path="/buttons" element={<Buttons />} />
-            <Route path="/images" element={<Images />} />
-            <Route path="/videos" element={<Videos />} /> */}
-
-            {/* Charts */}
-            {/* <Route path="/line-chart" element={<LineChart />} />
-            <Route path="/bar-chart" element={<BarChart />} /> */}
-            {/* </Route> */}
           </Route>
           {/* Auth Layout */}
           <Route path="/signin" element={<SignIn />} />

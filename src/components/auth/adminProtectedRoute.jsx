@@ -1,14 +1,28 @@
 // ProtectedRoute.jsx
 import { Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { useState } from "react";
 
 const ProtectedRoute = ({ children }) => {
     const token = Cookies.get("authToken");
+    const [user, setuser] = useState(() => {
+        const auth = localStorage.getItem('auth')
+        const userRole = JSON.parse(auth)
+        return userRole
+    })
+
+    console.log("userrole", user)
 
     if (!token) {
         localStorage.removeItem("auth")
+
         return <Navigate to="/signin" replace />; // ✅ Component, not function
     }
+
+    if (user.role == "vendor") {
+        return <Navigate to="/" replace />;
+    }
+
 
     return children;
 };
